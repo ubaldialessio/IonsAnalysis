@@ -1,0 +1,13 @@
+basefile=$Fn(file)
+
+executable              = /storage/gpfs_ams/ams/users/aubaldi/pg-rm2-ionsanalysis/bin/SelectEvents
+arguments               = $(file) -i /storage/gpfs_ams/ams/users/aubaldi/getData/Data/$(basefile).root -t -c 6
+log                     = /storage/gpfs_ams/ams/users/aubaldi/getData/condor/log/logCondor.log
+output                  = /storage/gpfs_ams/ams/users/aubaldi/getData/condor/out/sel_data_$(basefile).txt
+error                   = /storage/gpfs_ams/ams/users/aubaldi/getData/condor/err/sel_data_$(basefile).txt
+batch_name              = sel_events_data
+should_transfer_files   = Yes
+when_to_transfer_output = ON_EXIT
+getenv                  = True
+
+queue file from /storage/gpfs_ams/ams/users/aubaldi/getData/ntuples/data_filelist.txt

@@ -1,0 +1,61 @@
+Performing C SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD failed with the following output:
+Change Dir: /storage/gpfs_ams/ams/users/aubaldi/checkVar/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/bin/gmake cmTC_2dacf/fast && /bin/gmake  -f CMakeFiles/cmTC_2dacf.dir/build.make CMakeFiles/cmTC_2dacf.dir/build
+gmake[1]: Entering directory `/storage/gpfs_ams/ams/users/aubaldi/checkVar/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_2dacf.dir/src.c.o
+/cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/bin/gcc   -DCMAKE_HAVE_LIBC_PTHREAD -o CMakeFiles/cmTC_2dacf.dir/src.c.o -c /storage/gpfs_ams/ams/users/aubaldi/checkVar/build/CMakeFiles/CMakeTmp/src.c
+Linking C executable cmTC_2dacf
+/cvmfs/sft.cern.ch/lcg/releases/CMake/3.18.4-2ffec/x86_64-centos7-gcc9-opt/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2dacf.dir/link.txt --verbose=1
+/cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/bin/gcc  -DCMAKE_HAVE_LIBC_PTHREAD CMakeFiles/cmTC_2dacf.dir/src.c.o -o cmTC_2dacf 
+/cvmfs/sft.cern.ch/lcg/releases/binutils/2.34-990b2/x86_64-centos7/bin/ld: CMakeFiles/cmTC_2dacf.dir/src.c.o: in function `main':
+src.c:(.text+0x2d): undefined reference to `pthread_create'
+/cvmfs/sft.cern.ch/lcg/releases/binutils/2.34-990b2/x86_64-centos7/bin/ld: src.c:(.text+0x39): undefined reference to `pthread_detach'
+/cvmfs/sft.cern.ch/lcg/releases/binutils/2.34-990b2/x86_64-centos7/bin/ld: src.c:(.text+0x45): undefined reference to `pthread_cancel'
+/cvmfs/sft.cern.ch/lcg/releases/binutils/2.34-990b2/x86_64-centos7/bin/ld: src.c:(.text+0x56): undefined reference to `pthread_join'
+/cvmfs/sft.cern.ch/lcg/releases/binutils/2.34-990b2/x86_64-centos7/bin/ld: src.c:(.text+0x6a): undefined reference to `pthread_atfork'
+collect2: error: ld returned 1 exit status
+gmake[1]: *** [cmTC_2dacf] Errore 1
+gmake[1]: Leaving directory `/storage/gpfs_ams/ams/users/aubaldi/checkVar/build/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_2dacf/fast] Errore 2
+
+
+Source file was:
+#include <pthread.h>
+
+void* test_func(void* data)
+{
+  return data;
+}
+
+int main(void)
+{
+  pthread_t thread;
+  pthread_create(&thread, NULL, test_func, NULL);
+  pthread_detach(thread);
+  pthread_cancel(thread);
+  pthread_join(thread, NULL);
+  pthread_atfork(NULL, NULL, NULL);
+  pthread_exit(NULL);
+
+  return 0;
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /storage/gpfs_ams/ams/users/aubaldi/checkVar/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/bin/gmake cmTC_818e4/fast && /bin/gmake  -f CMakeFiles/cmTC_818e4.dir/build.make CMakeFiles/cmTC_818e4.dir/build
+gmake[1]: Entering directory `/storage/gpfs_ams/ams/users/aubaldi/checkVar/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_818e4.dir/CheckFunctionExists.c.o
+/cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/bin/gcc   -DCHECK_FUNCTION_EXISTS=pthread_create -o CMakeFiles/cmTC_818e4.dir/CheckFunctionExists.c.o -c /cvmfs/sft.cern.ch/lcg/releases/CMake/3.18.4-2ffec/x86_64-centos7-gcc9-opt/share/cmake-3.18/Modules/CheckFunctionExists.c
+Linking C executable cmTC_818e4
+/cvmfs/sft.cern.ch/lcg/releases/CMake/3.18.4-2ffec/x86_64-centos7-gcc9-opt/bin/cmake -E cmake_link_script CMakeFiles/cmTC_818e4.dir/link.txt --verbose=1
+/cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/bin/gcc  -DCHECK_FUNCTION_EXISTS=pthread_create CMakeFiles/cmTC_818e4.dir/CheckFunctionExists.c.o -o cmTC_818e4  -lpthreads 
+/cvmfs/sft.cern.ch/lcg/releases/binutils/2.34-990b2/x86_64-centos7/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+gmake[1]: *** [cmTC_818e4] Errore 1
+gmake[1]: Leaving directory `/storage/gpfs_ams/ams/users/aubaldi/checkVar/build/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_818e4/fast] Errore 2
+
+
+

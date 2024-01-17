@@ -1,0 +1,10 @@
+cmake_minimum_required(VERSION 3.13)
+project(checkVar)
+set(CMAKE_CXX_STANDARD 17)
+find_package(NAIA REQUIRED)
+find_package(NSL REQUIRED)
+
+add_executable(checkVar src/checkVar.cpp)
+target_link_libraries(checkVar NAIA::NAIAChain NSL::NSLSelections)
+target_include_directories(checkVar PRIVATE include/)
+set_target_properties(checkVar PROPERTIES RUNTIME_OUTPUT_DIRECTORY ./../bin/)
