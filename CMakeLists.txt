@@ -8,3 +8,8 @@ add_executable(checkVar src/checkVar.cpp)
 target_link_libraries(checkVar NAIA::NAIAChain NSL::NSLSelections)
 target_include_directories(checkVar PRIVATE include/)
 set_target_properties(checkVar PROPERTIES RUNTIME_OUTPUT_DIRECTORY ./../bin/)
+
+add_executable(selectEv src/selectEv.cpp)
+target_link_libraries(selectEv NAIA::NAIAChain NSL::NSLSelections)
+target_include_directories(selectEv PRIVATE include/)
+set_target_properties(selectEv PROPERTIES RUNTIME_OUTPUT_DIRECTORY ./../bin/)

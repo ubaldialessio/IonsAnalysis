@@ -1,0 +1,16 @@
+basefile=$Fn(file)
+
+mypath=/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/Data/checkVar
+binpath=/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/bin
+
+executable              = $(binpath)/checkVar
+arguments               = $(file) $(mypath)/checkToSum/$(basefile).root
+log                     = $(mypath)/condor/log/check.log
+output                  = $(mypath)/condor/out/check_$(basefile).txt
+error                   = $(mypath)/condor/err/check_$(basefile).txt
+batch_name              = checkVar
+should_transfer_files   = Yes
+when_to_transfer_output = ON_EXIT
+getenv                  = True 
+
+queue file from /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/getData/ntuples/file_00171.txt

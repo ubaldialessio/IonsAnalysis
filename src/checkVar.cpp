@@ -1,34 +1,16 @@
-#include <iostream>
-#include <fstream>
-#include <filesystem>
-#include <TFile.h>
-#include <TF1.h>
-#include <TH1D.h>
-#include <TH2D.h>
-#include <TGraphErrors.h>
-#include <TStyle.h>
-#include <TChain.h>
-#include <TMath.h>
-#include <TTree.h>
-#include <TString.h>
-#include <TCanvas.h>
-#include <Math/Minimizer.h>
-#include <TVirtualFitter.h>
-#include <TEfficiency.h>
-#include "TString.h"
-#include "utils.h"
-using namespace std;
+#include "definition.h"
 
 int main(int argc, char *argv[]) {
 	if (argc < 2) {
 	    printf("Usage: \n");
-	    printf("%s <input root file> \n", argv[0]);
+	    printf("%s <input root file> <output root file>  \n", argv[0]);
 	    return 1;
 	}
 
 	//check if is a valid input
     bool validInput = true;
 	//check(); 
+	TString out = argv[2];
 
 	//process
 	if (validInput) {
@@ -65,11 +47,11 @@ int main(int argc, char *argv[]) {
 			ltof_edep  = event.tofPlus->LayerEdep[2]+event.tofPlus->LayerEdep[3];
 			chargel1 = event.trTrackBase->LayerChargeXY[0][CRT]; //0= layer 1
 			chargeInner = event.trTrackBase->InnerCharge[CRT];
-			rigInnerL1 = eventl.trTrackBase->Rigidty[FIT][IL1];
+			rigInnerL1 = event.trTrackBase->Rigidity[FIT][IL1];
 
 			tree->Fill();
 		}
-		auto outfile = new TFile("test.root", "recreate");
+		auto outfile = new TFile(out, "recreate");
 		outfile->WriteTObject(tree, "variables");
 		outfile->Close();
 	}

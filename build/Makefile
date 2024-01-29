@@ -75,17 +75,6 @@ CMAKE_BINARY_DIR = /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target rebuild_cache
-rebuild_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/cvmfs/sft.cern.ch/lcg/releases/CMake/3.18.4-2ffec/x86_64-centos7-gcc9-opt/bin/cmake --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : rebuild_cache
-
-# Special rule for the target rebuild_cache
-rebuild_cache/fast: rebuild_cache
-
-.PHONY : rebuild_cache/fast
-
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
@@ -96,6 +85,17 @@ edit_cache:
 edit_cache/fast: edit_cache
 
 .PHONY : edit_cache/fast
+
+# Special rule for the target rebuild_cache
+rebuild_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
+	/cvmfs/sft.cern.ch/lcg/releases/CMake/3.18.4-2ffec/x86_64-centos7-gcc9-opt/bin/cmake --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : rebuild_cache
+
+# Special rule for the target rebuild_cache
+rebuild_cache/fast: rebuild_cache
+
+.PHONY : rebuild_cache/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -142,6 +142,19 @@ checkVar/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/checkVar.dir/build.make CMakeFiles/checkVar.dir/build
 .PHONY : checkVar/fast
 
+#=============================================================================
+# Target rules for targets named selectEv
+
+# Build rule for target.
+selectEv: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 selectEv
+.PHONY : selectEv
+
+# fast build rule for target.
+selectEv/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/build
+.PHONY : selectEv/fast
+
 src/checkVar.o: src/checkVar.cpp.o
 
 .PHONY : src/checkVar.o
@@ -169,6 +182,33 @@ src/checkVar.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/checkVar.dir/build.make CMakeFiles/checkVar.dir/src/checkVar.cpp.s
 .PHONY : src/checkVar.cpp.s
 
+src/selectEv.o: src/selectEv.cpp.o
+
+.PHONY : src/selectEv.o
+
+# target to build an object file
+src/selectEv.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/src/selectEv.cpp.o
+.PHONY : src/selectEv.cpp.o
+
+src/selectEv.i: src/selectEv.cpp.i
+
+.PHONY : src/selectEv.i
+
+# target to preprocess a source file
+src/selectEv.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/src/selectEv.cpp.i
+.PHONY : src/selectEv.cpp.i
+
+src/selectEv.s: src/selectEv.cpp.s
+
+.PHONY : src/selectEv.s
+
+# target to generate assembly for a file
+src/selectEv.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/src/selectEv.cpp.s
+.PHONY : src/selectEv.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -178,9 +218,13 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... checkVar"
+	@echo "... selectEv"
 	@echo "... src/checkVar.o"
 	@echo "... src/checkVar.i"
 	@echo "... src/checkVar.s"
+	@echo "... src/selectEv.o"
+	@echo "... src/selectEv.i"
+	@echo "... src/selectEv.s"
 .PHONY : help
 
 
