@@ -1,4 +1,4 @@
-# Install script for directory: /storage/gpfs_ams/ams/users/aubaldi/checkVar
+# Install script for directory: /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/storage/gpfs_ams/ams/users/aubaldi/checkVar/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

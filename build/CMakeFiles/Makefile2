@@ -63,10 +63,10 @@ RM = /cvmfs/sft.cern.ch/lcg/releases/CMake/3.18.4-2ffec/x86_64-centos7-gcc9-opt/
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /storage/gpfs_ams/ams/users/aubaldi/checkVar
+CMAKE_SOURCE_DIR = /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /storage/gpfs_ams/ams/users/aubaldi/checkVar/build
+CMAKE_BINARY_DIR = /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -93,14 +93,14 @@ clean: CMakeFiles/checkVar.dir/clean
 CMakeFiles/checkVar.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/checkVar.dir/build.make CMakeFiles/checkVar.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/checkVar.dir/build.make CMakeFiles/checkVar.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/storage/gpfs_ams/ams/users/aubaldi/checkVar/build/CMakeFiles --progress-num=1,2 "Built target checkVar"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles --progress-num=1,2 "Built target checkVar"
 .PHONY : CMakeFiles/checkVar.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/checkVar.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /storage/gpfs_ams/ams/users/aubaldi/checkVar/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/checkVar.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /storage/gpfs_ams/ams/users/aubaldi/checkVar/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles 0
 .PHONY : CMakeFiles/checkVar.dir/rule
 
 # Convenience name for target.
