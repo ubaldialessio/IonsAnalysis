@@ -22,6 +22,7 @@
 
 using namespace std;
 namespace ns = NSL::Selections;
+int fov = 1; // Fields of view: 0 = 25 deg, 1 = 30 deg, 2 = 35 deg, 3 = 40 deg
 
 auto CRT = NAIA::TrTrack::ChargeRecoType::YJ;
 auto FIT = NAIA::TrTrack::Fit::GBL;
