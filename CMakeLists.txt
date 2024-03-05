@@ -13,3 +13,13 @@ add_executable(selectEv src/selectEv.cpp)
 target_link_libraries(selectEv NAIA::NAIAChain NSL::NSLSelections)
 target_include_directories(selectEv PRIVATE include/)
 set_target_properties(selectEv PROPERTIES RUNTIME_OUTPUT_DIRECTORY ./../bin/)
+
+add_executable(hplot src/hplot.cpp)
+target_link_libraries(hplot NAIA::NAIAChain NSL::NSLSelections)
+target_include_directories(hplot PRIVATE include/)
+set_target_properties(hplot PROPERTIES RUNTIME_OUTPUT_DIRECTORY ./../bin/)
+
+add_executable(eff src/eff.cpp)
+target_link_libraries(eff NAIA::NAIAChain NSL::NSLSelections)
+target_include_directories(eff PRIVATE include/)
+set_target_properties(eff PROPERTIES RUNTIME_OUTPUT_DIRECTORY ./../bin/)

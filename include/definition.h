@@ -19,6 +19,9 @@
 #include <TEfficiency.h>
 #include "TString.h"
 #include "TTimeStamp.h"
+#include "TKey.h"
+#include <TROOT.h>
+#include <TSystem.h>
 
 #include "Efficiencies/TrTrackEffSel.h"
 
@@ -26,7 +29,6 @@ using namespace std;
 namespace ns = NSL::Selections;
 int fov = 1; // Fields of view: 0 = 25 deg, 1 = 30 deg, 2 = 35 deg, 3 = 40 deg
 float inf = 9999999;
-
 
 
 auto CRT = NAIA::TrTrack::ChargeRecoType::YJ;

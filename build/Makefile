@@ -75,17 +75,6 @@ CMAKE_BINARY_DIR = /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target edit_cache
-edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	/cvmfs/sft.cern.ch/lcg/releases/CMake/3.18.4-2ffec/x86_64-centos7-gcc9-opt/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : edit_cache
-
-# Special rule for the target edit_cache
-edit_cache/fast: edit_cache
-
-.PHONY : edit_cache/fast
-
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
@@ -96,6 +85,17 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 
 .PHONY : rebuild_cache/fast
+
+# Special rule for the target edit_cache
+edit_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
+	/cvmfs/sft.cern.ch/lcg/releases/CMake/3.18.4-2ffec/x86_64-centos7-gcc9-opt/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : edit_cache
+
+# Special rule for the target edit_cache
+edit_cache/fast: edit_cache
+
+.PHONY : edit_cache/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -130,6 +130,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named selectEv
+
+# Build rule for target.
+selectEv: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 selectEv
+.PHONY : selectEv
+
+# fast build rule for target.
+selectEv/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/build
+.PHONY : selectEv/fast
+
+#=============================================================================
 # Target rules for targets named checkVar
 
 # Build rule for target.
@@ -143,17 +156,30 @@ checkVar/fast:
 .PHONY : checkVar/fast
 
 #=============================================================================
-# Target rules for targets named selectEv
+# Target rules for targets named eff
 
 # Build rule for target.
-selectEv: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 selectEv
-.PHONY : selectEv
+eff: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 eff
+.PHONY : eff
 
 # fast build rule for target.
-selectEv/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/build
-.PHONY : selectEv/fast
+eff/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/eff.dir/build.make CMakeFiles/eff.dir/build
+.PHONY : eff/fast
+
+#=============================================================================
+# Target rules for targets named hplot
+
+# Build rule for target.
+hplot: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 hplot
+.PHONY : hplot
+
+# fast build rule for target.
+hplot/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/hplot.dir/build.make CMakeFiles/hplot.dir/build
+.PHONY : hplot/fast
 
 src/checkVar.o: src/checkVar.cpp.o
 
@@ -181,6 +207,60 @@ src/checkVar.s: src/checkVar.cpp.s
 src/checkVar.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/checkVar.dir/build.make CMakeFiles/checkVar.dir/src/checkVar.cpp.s
 .PHONY : src/checkVar.cpp.s
+
+src/eff.o: src/eff.cpp.o
+
+.PHONY : src/eff.o
+
+# target to build an object file
+src/eff.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/eff.dir/build.make CMakeFiles/eff.dir/src/eff.cpp.o
+.PHONY : src/eff.cpp.o
+
+src/eff.i: src/eff.cpp.i
+
+.PHONY : src/eff.i
+
+# target to preprocess a source file
+src/eff.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/eff.dir/build.make CMakeFiles/eff.dir/src/eff.cpp.i
+.PHONY : src/eff.cpp.i
+
+src/eff.s: src/eff.cpp.s
+
+.PHONY : src/eff.s
+
+# target to generate assembly for a file
+src/eff.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/eff.dir/build.make CMakeFiles/eff.dir/src/eff.cpp.s
+.PHONY : src/eff.cpp.s
+
+src/hplot.o: src/hplot.cpp.o
+
+.PHONY : src/hplot.o
+
+# target to build an object file
+src/hplot.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/hplot.dir/build.make CMakeFiles/hplot.dir/src/hplot.cpp.o
+.PHONY : src/hplot.cpp.o
+
+src/hplot.i: src/hplot.cpp.i
+
+.PHONY : src/hplot.i
+
+# target to preprocess a source file
+src/hplot.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/hplot.dir/build.make CMakeFiles/hplot.dir/src/hplot.cpp.i
+.PHONY : src/hplot.cpp.i
+
+src/hplot.s: src/hplot.cpp.s
+
+.PHONY : src/hplot.s
+
+# target to generate assembly for a file
+src/hplot.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/hplot.dir/build.make CMakeFiles/hplot.dir/src/hplot.cpp.s
+.PHONY : src/hplot.cpp.s
 
 src/selectEv.o: src/selectEv.cpp.o
 
@@ -218,10 +298,18 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... checkVar"
+	@echo "... eff"
+	@echo "... hplot"
 	@echo "... selectEv"
 	@echo "... src/checkVar.o"
 	@echo "... src/checkVar.i"
 	@echo "... src/checkVar.s"
+	@echo "... src/eff.o"
+	@echo "... src/eff.i"
+	@echo "... src/eff.s"
+	@echo "... src/hplot.o"
+	@echo "... src/hplot.i"
+	@echo "... src/hplot.s"
 	@echo "... src/selectEv.o"
 	@echo "... src/selectEv.i"
 	@echo "... src/selectEv.s"
