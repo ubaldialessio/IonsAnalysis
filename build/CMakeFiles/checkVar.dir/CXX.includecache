@@ -6,6 +6,24 @@
 
 #IncludeRegexTransform: 
 
+../include/Efficiencies/TrTrackEffSel.h
+Chain/NAIAChain.h
+-
+NSL/AllSelections.h
+-
+TGraph.h
+-
+TH2D.h
+-
+TTimeStamp.h
+-
+array
+-
+memory
+-
+numeric
+-
+
 ../include/definition.h
 Chain/NAIAChain.h
 -
@@ -49,6 +67,8 @@ TString.h
 ../include/TString.h
 TTimeStamp.h
 ../include/TTimeStamp.h
+Efficiencies/TrTrackEffSel.h
+../include/Efficiencies/TrTrackEffSel.h
 
 /cvmfs/ams.cern.ch/Offline/amsitaly/public/install/x86_64-centos7-gcc9.3/naia/v1.0.2/include/Chain/Event.h
 Containers/Containers.h

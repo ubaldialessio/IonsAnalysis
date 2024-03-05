@@ -6,6 +6,28 @@
 
 #IncludeRegexTransform: 
 
+../include/Efficiencies/TrTrackEffSel.h
+Chain/NAIAChain.h
+-
+NSL/AllSelections.h
+-
+TGraph.h
+-
+TH2D.h
+-
+TTimeStamp.h
+-
+array
+-
+memory
+-
+numeric
+-
+
+../include/binning.h
+definition.h
+../include/definition.h
+
 ../include/definition.h
 Chain/NAIAChain.h
 -
@@ -49,6 +71,12 @@ TString.h
 ../include/TString.h
 TTimeStamp.h
 ../include/TTimeStamp.h
+Efficiencies/TrTrackEffSel.h
+../include/Efficiencies/TrTrackEffSel.h
+
+../include/selection.h
+binning.h
+../include/binning.h
 
 /cvmfs/ams.cern.ch/Offline/amsitaly/public/install/x86_64-centos7-gcc9.3/naia/v1.0.2/include/Chain/Event.h
 Containers/Containers.h
@@ -3003,8 +3031,8 @@ cstring
 -
 
 /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/src/selectEv.cpp
-definition.h
-/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/src/definition.h
+selection.h
+/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/src/selection.h
 
 /storage/gpfs_ams/ams/users/aubaldi/nsl.install/include/NSL/AllSelections.h
 NSL/RTI/RTISelections.h
