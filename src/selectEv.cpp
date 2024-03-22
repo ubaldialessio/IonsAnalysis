@@ -1,8 +1,7 @@
-#include "selection.h"
+#include "binning.h"
 
 void FillHistos(TH2D &histo, unsigned int charge, double Amass, double weight, NAIA::NAIAChain &chain, NAIA::Event &event);
 double GetDataMass(unsigned int charge);
-
 
 int main(int argc, char *argv[]) {
 
@@ -23,13 +22,13 @@ int main(int argc, char *argv[]) {
 	auto phys_trig    = new TH2D("", ";Utime;R(GV)", nTbins-1, Tbins, nRbins-1, Rbins);
 	auto unbiased_trig= new TH2D("", ";Utime;R(GV)", nTbins-1, Tbins, nRbins-1, Rbins);
 	auto sample_tr    = new TH2D("", ";Utime;R(GV)", nTbins-1, Tbins, nRbins-1, Rbins);
-	auto pass_tr      = new TH2D("", ";Utime;R(GV)", nTbins-1, Tbins, nRbins-1, Rbins);
+	auto pass_tr      = new TH2D("", ";Utime;R(GV)", nTbins-1, Tbins, nRbins-1, Rbins);;
 
 	auto noTriggers  = trg::HasTrigger(0);                	// 00000000
 	auto unbiased    = trg::HasTrigger(1)  ||             	// 00000001 (only unbiased ToF)
 	                   trg::HasTrigger(64) ||            	// 01000000 (only unbiased ECAL)
 	                   trg::HasTrigger(65);              	// 01000001 (unbiased ToF AND unbiased ECAL)
-	auto physics     = ns::Trigger::HasPhysicsTrigger();    // 00111110 (Any non-prescaled trigger)
+	auto physics     = ns::Trigger::HasPhysicsTrigger();    // 00111110 (Any non-prescaled trigger)	
 
 
 	// this mask will check for charge > 2  according to both tracker or tof
@@ -61,14 +60,12 @@ int main(int argc, char *argv[]) {
 		}
 		chain.SetupBranches();
 		bool isMC = chain.IsMC();
-
 		unsigned int utime, oldtime;
 		float reco_il1, reco_inn, beta, lt;
 		double gen, cutoff;
 		double Amass = 1;
 		double weight = 1;
 		Amass = GetDataMass(6); // Getting atomic mass number
-
 		if(isMC){
 		    tree->Branch("utime", &utime);
 		    tree->Branch("reco_inn", &reco_inn);
@@ -95,10 +92,219 @@ int main(int argc, char *argv[]) {
 		      }
 		    }
 		}
-		
+		unsigned int icut_sel = 0, icut_track = 0, icut_tof = 0, icut_trig = 0, icut_l1 = 0;
+		std::vector<std::string> labels_Sel;
+					labels_Sel = {"Total",
+				              "Trigger",
+				              "BetaInRange",
+				              "UTofChargeInRange",
+				              "TofGoodPath",
+				              "InnerHitPattern",
+				              "NGoodCl",
+				              "InnerChReso<0.2",
+				              "InnerChInRange",
+				              "Inner #chi^{2}_{Y}",
+				              "InnerL1 #chi^{2}_{Y}",
+				              "L1HitCut",
+				              "L1Charge In Range",
+				              "L1NormRes"};			
+			auto ncuts_Sel = labels_Sel.size();
+			auto counters_Sel = new TH1D("counters_Sel", "", ncuts_Sel, -0.5, ncuts_Sel - 0.5);
+			auto fill_counters_Sel = [&counters_Sel, &icut_sel, &labels_Sel](Event &event) {
+				 counters_Sel->GetXaxis()->SetBinLabel(icut_sel + 1, labels_Sel.at(icut_sel).c_str());
+				 counters_Sel->Fill(icut_sel);
+				 icut_sel++;
+			};		
+		std::vector<std::string> labels_trackEff;
+					labels_trackEff = {"Total",
+							              "Trigger",
+							              "TofSt_Beta",
+							              "L1 UnbHit",
+							              "L1 UnbCharge",
+							              "InsideINN",
+							              "InsideL1"
+							              "InnFidV",
+							              "L1FidV",
+							              "Tof #chi^{2} time",
+							              "Tof #chi^{2} coo",
+							              "Upper TofSt Charge",
+							              "Lower TofSt Charge",
+							              "Tot TofSt Charge"};
+			auto ncuts_trackEff = labels_trackEff.size();
+			auto counters_trackEff = new TH1D("counters_trackEff", "", ncuts_trackEff, -0.5, ncuts_trackEff - 0.5);
+			auto fill_counters_trackEff = [&counters_trackEff, &icut_track, &labels_trackEff](Event &event) {
+				 counters_trackEff->GetXaxis()->SetBinLabel(icut_track + 1, labels_trackEff.at(icut_track).c_str());
+				 counters_trackEff->Fill(icut_track);
+				 icut_track++;
+			};		
+		std::vector<std::string> labels_tofEff;
+					labels_tofEff = {"Total",
+										  "Trigger",
+							              "InnerHitPattern",
+							              "InnerNHits>4",
+							              "NGoodCl",
+							              "InnerChInRange",
+							              "Inner #chi^{2}_{Y}",
+							              "InnerL1 #chi^{2}_{Y}",
+							              "L1HitCut",
+							              "IsInL1",
+							              "GoodSecTrack",
+							              "L1 Ch Status",
+							              "L1 Charge In Range",
+							              "InnerL1Fid",
+							              "L1Fid",
+							              "Inner Charge Resolution <0.2",
+							              "L1NormRes"};
+				
+			auto ncuts_tofEff = labels_tofEff.size();
+			auto counters_tofEff = new TH1D("counters_tofEff", "", ncuts_tofEff, -0.5, ncuts_tofEff - 0.5);
+			auto fill_counters_tofEff = [&counters_tofEff, &icut_tof, &labels_tofEff](Event &event) {
+				 counters_tofEff->GetXaxis()->SetBinLabel(icut_tof + 1, labels_tofEff.at(icut_tof).c_str());
+				 counters_tofEff->Fill(icut_tof);
+				 icut_tof++;
+			};		
+		std::vector<std::string> labels_trigEff;
+					labels_trigEff = {"Total",
+										  "TofGoodPath",
+							              "Beta",
+							              "Upper Tof Charge",
+							              "Inner Charge Pattern",
+							              "NGoodCl>2",
+							              "Inner Charge In Range",
+							              "Inner #chi^{2}_{Y}",
+							              "InnerL1 #chi^{2}_{Y}",
+							              "L1 Hit",
+							              "L1NormRes",
+							              "L1 Charge In Range",
+							              "Inner Charge Resolution <0.2",
+							              "IsInsideL1"};				
+			auto ncuts_trigEff = labels_trigEff.size();
+			auto counters_trigEff = new TH1D("counters_trigEff", "", ncuts_trigEff, -0.5, ncuts_trigEff - 0.5);
+			auto fill_counters_trigEff = [&counters_trigEff, &icut_trig, &labels_trigEff](Event &event) {
+				 counters_trigEff->GetXaxis()->SetBinLabel(icut_trig + 1, labels_trigEff.at(icut_trig).c_str());
+				 counters_trigEff->Fill(icut_trig);
+				 icut_trig++;
+			};		
+		std::vector<std::string> labels_l1Eff;
+					labels_l1Eff = {"Total",
+							              "Trigger",
+							              "TofGoodPath",
+							              "Beta",
+							              "Upper Tof Charge",
+							              "Inner Charge Pattern",
+							              "Inner Track NHits>4",
+							              "NGoodCl",
+							              "Inner Charge In Range",
+							              "Inner #chi^{2}_{Y}",
+							              "L1Fid",
+							              "InnerFid",
+							              "IsInL1",
+							              "GoodTRDHits",
+							              "Inner Charge Resolution <0.2"};				
+			auto ncuts_l1Eff = labels_l1Eff.size();
+			auto counters_l1Eff = new TH1D("counters_l1Eff", "", ncuts_l1Eff, -0.5, ncuts_l1Eff - 0.5);
+			auto fill_counters_l1Eff = [&counters_l1Eff, &icut_l1, &labels_l1Eff](Event &event) {
+				 counters_l1Eff->GetXaxis()->SetBinLabel(icut_l1 + 1, labels_l1Eff.at(icut_l1).c_str());
+				 counters_l1Eff->Fill(icut_l1);
+				 icut_l1++;
+			};
+namespace ef = Efficiency::TriggerEffSel;
+namespace track = Efficiency::TrTrackEffSel;
+auto mysel =
+	ns::Trigger::HasPhysicsTrigger().AddPostHook(fill_counters_Sel) && //OK
+	ns::Tof::BetaInRange(0.0,inf,BTH).AddPostHook(fill_counters_Sel) && //OK
+	ns::Tof::ChargeInRange(6.0-0.75,6.0+0.75,UTC).AddPostHook(fill_counters_Sel) && //OK
+    (ns::Tof::GoodPathlength(0b0001) ||ns::Tof::GoodPathlength(0b0010) ).AddPostHook(fill_counters_Sel) && //OK
+    ns::InnerTracker::HitPattern().AddPostHook(fill_counters_Sel) && //OK
+    ns::InnerTracker::NGoodClustersGreaterThan(2, 0x10013D).AddPostHook(fill_counters_Sel) && //OK
+    ns::InnerTracker::ChargeRMSLessThan(0.2, CRT).AddPostHook(fill_counters_Sel) && //OK
+    ns::InnerTracker::ChargeInRange(6.0-0.3,6.0+0.7,CRT).AddPostHook(fill_counters_Sel) && //OK
+    ns::Track::ChiSquareLessThan(10.0, YSD, FIT, IL1).AddPostHook(fill_counters_Sel) && //OK
+    ns::Track::ChiSquareLessThan(10.0, YSD, FIT, INN).AddPostHook(fill_counters_Sel) && //OK
+    ns::Track::HitCut(1).AddPostHook(fill_counters_Sel) && //OK
+	ns::TrackerLayer::ChargeInRange(1,0,6.0+0.8,CRT).AddPostHook(fill_counters_Sel) && //OK
+	innTr::L1NormResidualLessThan(10.0,FIT).AddPostHook(fill_counters_Sel); //OK
+auto num_tof =
+	ns::Tof::BetaInRange(0.0,inf,BTH) && //OK
+	ns::Tof::ChargeInRange(6.0-0.75,6.0+0.75,UTC) && //OK
+	(ns::Tof::GoodPathlength(0b0001) || ns::Tof::GoodPathlength(0b0010)); //OK
+auto den_tof = 
+	ns::Trigger::HasPhysicsTrigger().AddPostHook(fill_counters_tofEff) && //OK
+	ns::InnerTracker::HitPattern().AddPostHook(fill_counters_tofEff) &&  //OK
+	ns::InnerTracker::ChargeInRange(6.0-0.3,6.0+0.7,CRT).AddPostHook(fill_counters_tofEff) && //OK
+	ns::InnerTracker::NGoodClustersGreaterThan(2, 0x10013D).AddPostHook(fill_counters_tofEff) && //OK
+	ns::Track::ChiSquareLessThan(10.0, YSD, FIT, IL1).AddPostHook(fill_counters_tofEff) && //OK
+	ns::Track::ChiSquareLessThan(10.0, YSD, FIT, INN).AddPostHook(fill_counters_tofEff) && //OK
+	ns::Track::HitCut(1).AddPostHook(fill_counters_tofEff) && //OK
+	ms::IsInsideL1(FIT, INN, 0).AddPostHook(fill_counters_tofEff) && //OK
+	ms::HasGoodSecondTrTrack(FIT, INN, 0.2).AddPostHook(fill_counters_tofEff) && //OK
+	ns::TrackerLayer::ChargeInRange(1,0,6.0+0.8,CRT).AddPostHook(fill_counters_tofEff) && //OK
+	ns::InnerTracker::ChargeRMSLessThan(0.2, CRT).AddPostHook(fill_counters_tofEff) && //OK
+	innTr::L1NormResidualLessThan(10.0,FIT).AddPostHook(fill_counters_tofEff); //OK	
+auto num_l1 =
+	ns::TrackerLayer::ChargeInRange(1,0,6.0+0.8,CRT) && 
+	ns::Track::ChiSquareLessThan(10.0, YSD, FIT, IL1) && 
+    ns::Track::L1FiducialVolume(FIT, IL1) && 
+    ns::Track::HitCut(1) && 
+    ns::TrackerLayer::ChargeStatus(1) && 
+    innTr::L1NormResidualLessThan(10.0,FIT); 
+auto den_l1 = 
+	ns::Trigger::HasPhysicsTrigger().AddPostHook(fill_counters_l1Eff) && 
+	ns::Tof::GoodPathlength(0b0011).AddPostHook(fill_counters_l1Eff) && 
+	ns::Tof::BetaInRange(0.0,inf,BTH).AddPostHook(fill_counters_l1Eff) && 
+	ns::Tof::ChargeInRange(6.0-0.2,6.0+0.2,UTC).AddPostHook(fill_counters_l1Eff) && 
+	ns::InnerTracker::HitPattern().AddPostHook(fill_counters_l1Eff) && 
+	ns::InnerTracker::NHitsGreaterThan(4, YSD).AddPostHook(fill_counters_l1Eff) &&
+	ns::InnerTracker::NGoodClustersGreaterThan(2, 0x10013D).AddPostHook(fill_counters_l1Eff) &&
+	ns::InnerTracker::ChargeInRange(6.0-0.2,6.0+0.2,CRT).AddPostHook(fill_counters_l1Eff) && 
+	ns::Track::ChiSquareLessThan(10.0f, YSD, FIT, INN).AddPostHook(fill_counters_l1Eff) && 
+	ns::Track::L1FiducialVolume(FIT, INN).AddPostHook(fill_counters_l1Eff) && 
+	ns::Track::InnerFiducialVolume(FIT, INN).AddPostHook(fill_counters_l1Eff) && 
+	ms::IsInsideL1(FIT, INN, 0).AddPostHook(fill_counters_l1Eff) && 
+	trd::HasGoodTRDHits(6).AddPostHook(fill_counters_l1Eff) &&
+	ns::InnerTracker::ChargeRMSLessThan(0.2, CRT).AddPostHook(fill_counters_l1Eff); 
+auto num_track =
+	ns::InnerTracker::HitPattern() && //OK
+	ns::InnerTracker::NGoodClustersGreaterThan(2, 0x10013D) && //OK
+	ns::InnerTracker::ChargeRMSLessThan(0.2, CRT) && //OK
+    ns::InnerTracker::ChargeInRange(6.0f-0.3f,6.0f+0.7,CRT) && //OK
+    ns::Track::ChiSquareLessThan(10.0f, YSD, FIT, INN); //OK
+auto den_track =
+	ns::Trigger::HasPhysicsTrigger().AddPostHook(fill_counters_trackEff) && //OK
+	TofSt::tofBetaInRange(0.4,inf,BTH).AddPostHook(fill_counters_trackEff) && //OK
+	track::UnbExtHitChargeStatus(EL1).AddPostHook(fill_counters_trackEff) && //OK
+	track::UnbExtHitChargeInRange(EL1,6,CRT,"").AddPostHook(fill_counters_trackEff) && //OK
+	track::IsInsideInner(4.5).AddPostHook(fill_counters_trackEff) && //OK
+	track::IsInsideL1(1).AddPostHook(fill_counters_trackEff) && //OK
+	track::InnerFiducialVolume().AddPostHook(fill_counters_trackEff) &&
+	track::L1FiducialVolume().AddPostHook(fill_counters_trackEff) &&
+	TofSt::tofChi2TimeLessThan(2).AddPostHook(fill_counters_trackEff) && //OK
+	TofSt::tofChi2CooLessThan(2).AddPostHook(fill_counters_trackEff) && //OK
+	ns::Tof::ChargeInRange(6.0-0.3,6.0+0.3, UTC).AddPostHook(fill_counters_trackEff) && //OK
+	ns::Tof::ChargeInRange(6.0-0.3,6.0+0.3, LTC).AddPostHook(fill_counters_trackEff) && //OK
+	ns::Tof::ChargeInRange(6.0-0.3,6.0+0.3, TOT).AddPostHook(fill_counters_trackEff); //OK
+auto den_trig =
+	ns::Tof::GoodPathlength(0b0011).AddPostHook(fill_counters_trigEff) && //OK
+	ns::Tof::BetaInRange(0.0,inf,BTH).AddPostHook(fill_counters_trigEff) && //OK
+	ns::Tof::ChargeInRange(6.0-0.75,6.0+0.75,UTC).AddPostHook(fill_counters_trigEff) && //OK
+    ns::InnerTracker::HitPattern().AddPostHook(fill_counters_trigEff) && //OK
+	ns::InnerTracker::NGoodClustersGreaterThan(2, 0x10013D).AddPostHook(fill_counters_trigEff) && //OK
+    ns::InnerTracker::ChargeInRange(6.0-0.3,6.0+0.7,CRT).AddPostHook(fill_counters_trigEff) && //OK
+    ns::Track::ChiSquareLessThan(10.0, YSD, FIT, IL1).AddPostHook(fill_counters_trigEff) && //OK
+    ns::Track::ChiSquareLessThan(10.0, YSD, FIT, INN).AddPostHook(fill_counters_trigEff) && //OK
+    ns::Track::HitCut(1).AddPostHook(fill_counters_trigEff) && //OK
+    innTr::L1NormResidualLessThan(10.0,FIT).AddPostHook(fill_counters_trigEff) && //OK
+	ns::TrackerLayer::ChargeInRange(1,0,6.0+0.8,CRT).AddPostHook(fill_counters_trigEff) && //OKok
+	ns::InnerTracker::ChargeRMSLessThan(0.2, CRT).AddPostHook(fill_counters_trigEff) && //OK
+	ef::IsInsideL1(FIT,IL1,0).AddPostHook(fill_counters_trigEff); //OK		
 
 /////////////////// LOOP ///////////////////////////////
 		for(Event& event : chain) {
+			icut_sel = 0;
+			icut_track = 0; 
+			icut_tof = 0;
+			icut_trig = 0;
+			icut_l1 = 0;
 			utime = event.header->UTCTime;
 			if (!isMC) {
 				if (utime>=1620025528 && utime<1635856717) // skipping photon-polarization period
@@ -120,10 +326,8 @@ int main(int argc, char *argv[]) {
 			    oldtime=utime;
 			    }
 			} else {
-				gen = event.mcTruthBase->Primary.GetGenMomentum();
+				gen = event.mcTruthBase->Primary.GetGenMomentum()/event.mcTruthBase->Primary.Z;
 			}	
-
-
 			////MY SELECTION////
 			if (mysel(event)) {
 				reco_il1  = event.trTrackBase->Rigidity[FIT][IL1];
@@ -136,7 +340,6 @@ int main(int argc, char *argv[]) {
 					mc_pass_gen->Fill(gen);
 				}
 			}
-
 			////TOF EFF////
       		if(den_tof(event)) {
       			reco_il1 = event.trTrackBase->Rigidity[FIT][IL1];
@@ -152,7 +355,6 @@ int main(int argc, char *argv[]) {
       		    	if (num_tof(event) ) pass_tof->Fill(utime, reco_il1);
       		    }
       		}
-
 			////L1 EFF/////
       		if(den_l1(event)) {
       			reco_inn = event.trTrackBase->Rigidity[FIT][INN];
@@ -169,31 +371,40 @@ int main(int argc, char *argv[]) {
       		   	}
       		}
 
-
 			////TRACK EFF////
       		if(den_track(event)) {
       			FillHistos(*sample_tr,6,Amass,weight,chain,event);
       			if(num_track(event)) FillHistos(*pass_tr,6,Amass,weight,chain,event);
       		}
-
-
 			////TRIGGER EFF/////
       		if(den_trig(event)) {
       			reco_il1 = event.trTrackBase->Rigidity[FIT][IL1];
       			int rbin = hist_rig->FindBin(reco_il1);
         		double rlowedge = hist_rig->GetBinLowEdge(rbin);
-        		event.evSummary->RestorePhysBPatt(true);
-        		double weight = event.evSummary->TriggerWeight();
         		if (!isMC) {
+        			event.evSummary->RestorePhysBPatt(true);
+        			double weight = event.evSummary->TriggerWeight();	
+        		}
+        		if (!isMC) { 
         			if(rlowedge > 1.2*cutoff) {
-	      				if (physics(event) || unbiased(event)) sample_trig->Fill(utime, reco_il1, weight);
-          				if (physics(event))  phys_trig->Fill(utime, reco_il1, weight);
-                  		if (unbiased(event)) unbiased_trig->Fill(utime, reco_il1);
+	      				if (physics(event)) {
+	      					sample_trig->Fill(utime, reco_il1, weight);	
+	      					phys_trig->Fill(utime, reco_il1, weight);
+	      				}
+                  		if (unbiased(event)) {
+                  			sample_trig->Fill(utime, reco_il1, weight);
+                  			unbiased_trig->Fill(utime, reco_il1);
+          				}
           			}
           		} else {
-          			if (physics(event) || unbiased(event) ) sample_trig->Fill(utime, reco_il1);
-          			if (physics(event) ) phys_trig->Fill(utime, reco_il1);
-          			if (unbiased(event) ) unbiased_trig->Fill(utime,reco_il1);
+          			if (physics(event)) {
+          				sample_trig->Fill(utime, reco_il1, weight);
+          				phys_trig->Fill(utime, reco_il1, weight);
+          			}
+          			if (unbiased(event)) {
+          				unbiased_trig->Fill(utime,reco_il1,weight);
+          				sample_trig->Fill(utime, reco_il1, weight);
+          			}
           		}
      		}
       		if (isMC) tree->Fill();	
@@ -201,6 +412,11 @@ int main(int argc, char *argv[]) {
 	
 	//WRITE//
 	auto outfile = new TFile(out, "recreate");
+	outfile->WriteTObject(counters_Sel, "counters_Sel");
+	outfile->WriteTObject(counters_tofEff, "counters_tofEff");
+	outfile->WriteTObject(counters_trigEff, "counters_trigEff");
+	outfile->WriteTObject(counters_l1Eff, "counters_l1Eff");
+	outfile->WriteTObject(counters_trackEff, "counters_trackEff");
 	outfile->WriteTObject(rigidity, "rigidity");
 	outfile->WriteTObject(lvt_25, "lvt_25");
 	outfile->WriteTObject(sample_tof, "sample_tof");

@@ -44,6 +44,12 @@ public:
                          NAIA::TrTrack::ChargeRecoType recoType, std::string option);
 };
 
+
+class ExtChargeInRange : public NSL::Selection {
+public:
+  ExtChargeInRange(double min, double max, NAIA::UnbExtHitBaseData::ExtHit layer, NAIA::TrTrack::ChargeRecoType recoType);
+};
+
 inline bool IsInsideLayer(unsigned int jlayer, float margin, NAIA::Event &event);
 
 class IsInsideL1 : public NSL::Selection {
