@@ -1,4 +1,5 @@
-
+#ifndef TRACKER_H
+#define TRACKER_H
 // NAIA headers
 #include <Chain/NAIAChain.h>
 
@@ -91,3 +92,4 @@ public:
 
 } // namespace TrTrackEffSel
 } // namespace Efficiency
+#endif // TRTRACKEFFSEL_H

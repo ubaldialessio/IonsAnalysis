@@ -1,78 +1,86 @@
-#include "binning.h"
+ #include "binning.h"
 
 TH1D* GetEff(TH1* hpass, TH1* htotal, TString option);
 
 
-int main(int argc, char **argv) {
-	if (argc < 2) {
-		printf("Usage: \n");
-		printf("%s <input.root> <output_name> \n", argv[0]);
-		printf("The directory where the output will be saved is: /storage/gpfs_ams/ams/users/aubaldi/Data/eff \n");
-		return 1;
+int main() {
+	TFile *dat = new TFile("/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/output/dat.root");
+	TFile *mc    = new TFile("/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/output/mc.root");
+	auto outfile = new TFile("/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/output/output.root","recreate");
+////MONTECARLO////
+	TH1D *m_pass_tof   = (TH1D*)((TH2F *)mc->Get("pass_tof"))->ProjectionY("a",start_bin,stop_bin);
+	TH1D *m_sample_tof = (TH1D*)((TH2F *)mc->Get("sample_tof"))->ProjectionY("b",start_bin,stop_bin);
+	TH1D *m_pass_l1	   = (TH1D*)((TH2F *)mc->Get("pass_l1"))->ProjectionY("c",start_bin,stop_bin);
+	TH1D *m_sample_l1  = (TH1D*)((TH2F *)mc->Get("sample_l1"))->ProjectionY("d",start_bin,stop_bin);
+	TH1D *m_pass_tr    = (TH1D*)((TH2F *)mc->Get("pass_tr"))->ProjectionY("e",start_bin,stop_bin);
+	TH1D *m_sample_tr  = (TH1D*)((TH2F *)mc->Get("sample_tr"))->ProjectionY("f",start_bin,stop_bin);
+	TH1D *m_sample_trig= (TH1D*)((TH2F *)mc->Get("sample_trig"))->ProjectionY("g",start_bin,stop_bin);
+	TH1D *m_phys_trig  = (TH1D*)((TH2F *)mc->Get("phys_trig"))->ProjectionY("h",start_bin,stop_bin);
+	auto m_tof_eff = GetEff(m_pass_tof,m_sample_tof,"simple");
+	auto m_l1_eff  = GetEff(m_pass_l1, m_sample_l1,"simple");
+	auto m_tr_eff  = GetEff(m_pass_tr, m_sample_tr,"simple");
+	auto m_trig_eff= GetEff(m_phys_trig,m_sample_trig,"simple");
+	TH1D *mc_pass_gen= (TH1D *)mc->Get("mc_pass_gen");
+	TH1D *mc_samp	 = (TH1D *)mc->Get("mc_samp");
+	TH1D *mc_pass    = (TH1D *)mc->Get("mc_pass");
+	mc_samp->Rebin(9);
+	mc_pass->Rebin(9);
+	mc_pass_gen->Rebin(9);
+	auto true_acc= GetEff(mc_pass_gen, mc_samp,"simple");
+	true_acc->Scale(TMath::Pi() * 3.9*3.9, "nosw2");
+	true_acc->SetName("true_acc");
+////DATA///////	
+	TH1D *d_pass_tof   = (TH1D*)((TH2F *)dat->Get("pass_tof"))->ProjectionY("i",start_bin,stop_bin);
+	TH1D *d_sample_tof = (TH1D*)((TH2F *)dat->Get("sample_tof"))->ProjectionY("j",start_bin,stop_bin);
+	TH1D *d_pass_l1	   = (TH1D*)((TH2F *)dat->Get("pass_l1"))->ProjectionY("k",start_bin,stop_bin);
+	TH1D *d_sample_l1  = (TH1D*)((TH2F *)dat->Get("sample_l1"))->ProjectionY("l",start_bin,stop_bin);
+	TH1D *d_pass_tr    = (TH1D*)((TH2F *)dat->Get("pass_tr"))->ProjectionY("m",start_bin,stop_bin);
+	TH1D *d_sample_tr  = (TH1D*)((TH2F *)dat->Get("sample_tr"))->ProjectionY("n",start_bin,stop_bin);
+	TH1D *d_sample_trig= (TH1D*)((TH2F *)dat->Get("sample_trig"))->ProjectionY("o",start_bin,stop_bin);
+	TH1D *d_phys_trig  = (TH1D*)((TH2F *)dat->Get("phys_trig"))->ProjectionY("p",start_bin,stop_bin);
+	auto d_tof_eff = GetEff(d_pass_tof,d_sample_tof,"simple");
+	auto d_l1_eff  = GetEff(d_pass_l1, d_sample_l1,"simple");
+	auto d_tr_eff  = GetEff(d_pass_tr, d_sample_tr,"simple");
+	auto d_trig_eff= GetEff(d_phys_trig,d_sample_trig,"simple");
+	auto hwidth = (TH1D*)hist_rig->Clone();
+	for(int i=1; i<=hist_rig->GetNbinsX(); ++i) {
+		hwidth->SetBinContent(i, hwidth->GetBinWidth(i));
+		hwidth->SetBinError(i, 0);
 	}
-	TString inp = argv[1], name_out = argv[2], path_out = "/storage/gpfs_ams/ams/users/aubaldi/Data/eff/", out = path_out+name_out;
-	TFile *f = new TFile(inp.Data() );
-	auto outfile = new TFile(out.Data() ,"recreate");
-	TH2F *h1 = (TH2F *)f->Get("pass_tof");
-	TH2F *h2 = (TH2F *)f->Get("sample_tof");
-	TH2F *h3 = (TH2F *)f->Get("pass_l1");
-	TH2F *h4 = (TH2F *)f->Get("sample_l1");
-	TH2F *h5 = (TH2F *)f->Get("pass_tr");
-	TH2F *h6 = (TH2F *)f->Get("sample_tr");
-	TH2F *h7 = (TH2F *)f->Get("sample_trig");
-	TH2F *h8 = (TH2F *)f->Get("phys_trig");
-	TH2F *h9 = (TH2F *)f->Get("unbiased_trig");
-	
-	TH1D *pass_tof	 = h1->ProjectionY("a",start_bin,stop_bin);
-	TH1D *sample_tof = h2->ProjectionY("b",start_bin,stop_bin);
-	TH1D *pass_l1	 = h3->ProjectionY("c",start_bin,stop_bin);
-	TH1D *sample_l1  = h4->ProjectionY("d",start_bin,stop_bin);
-	TH1D *pass_tr    = h5->ProjectionY("e",start_bin,stop_bin);
-	TH1D *sample_tr  = h6->ProjectionY("f",start_bin,stop_bin);
-	TH1D *sample_trig= h7->ProjectionY("g",start_bin,stop_bin);
-	TH1D *phys_trig  = h8->ProjectionY("h",start_bin,stop_bin);
-	TH1D *unb_trig   = h9->ProjectionY("i",start_bin,stop_bin);
-
-	auto tof_eff = GetEff(pass_tof,sample_tof,"efficiency");
-	auto l1_eff  = GetEff(pass_l1, sample_l1,"efficiency");
-	auto tr_eff  = GetEff(pass_tr, sample_tr,"efficiency");
-	auto trig_eff= GetEff(phys_trig,sample_trig,"efficiency");
-	
-	tof_eff->SetLineWidth(2);
-	l1_eff->SetLineWidth(2);
-	tr_eff->SetLineWidth(2);
-	trig_eff->SetLineWidth(2);
-	
-	outfile->WriteTObject(tof_eff,"tof_eff");
-	outfile->WriteTObject(l1_eff,"l1_eff");
-	outfile->WriteTObject(tr_eff,"tr_eff");
-	outfile->WriteTObject(trig_eff,"trig_eff");
-
-	if (inp.Contains("mc")) {
-		TH1D *mc_pass_gen= (TH1D *)f->Get("mc_pass_gen");
-		TH1D *mc_samp	 = (TH1D *)f->Get("mc_samp");
-		auto true_acc= GetEff(mc_pass_gen, mc_samp,"simple");
-		true_acc->Scale(TMath::Pi() * 3.9*3.9, "nosw2");
-		true_acc->SetLineWidth(2);
-		true_acc->GetYaxis()->SetRangeUser(0,0.1);
-		true_acc->SetName("true_acc");
-		outfile->WriteTObject(true_acc,"true_acc");
-	}
-	if (inp.Contains("dat")) {
-		auto hwidth = (TH1D*)hist_rig->Clone();
-		for(int i=1; i<=hist_rig->GetNbinsX(); ++i) {
-			hwidth->SetBinContent(i, hwidth->GetBinWidth(i));
-		    hwidth->SetBinError(i, 0);
-		}
-		auto lt     = (TH1D *)((TH2D *)f->Get("lvt_25"))->ProjectionY("j", start_bin, stop_bin);
-		auto counts = (TH1D *)((TH2D *)f->Get("rigidity"))->ProjectionY("k", start_bin, stop_bin);
-		auto flux = (TH1D *)counts->Clone();
-	  	flux->Divide(lt);
-	  	flux->Divide(hwidth);
-	  	outfile->WriteTObject(lt,"lt");
-	  	outfile->WriteTObject(counts,"counts");
-	  	outfile->WriteTObject(flux,"flux");
-	}
+	auto lt     = (TH1D *)((TH2D *)dat->Get("lvt_25"))->ProjectionY("j", start_bin, stop_bin);
+	auto counts = (TH1D *)((TH2D *)dat->Get("rigidity"))->ProjectionY("k", start_bin, stop_bin);
+	auto oldflux = (TH1D*)counts->Clone();
+	oldflux->Divide(lt);
+	oldflux->Divide(hwidth);
+////CORRECTIONS///
+	auto damc_l1     = GetEff(d_l1_eff,   m_l1_eff,   "correction");
+    auto damc_tof    = GetEff(d_tof_eff,  m_tof_eff,  "correction");
+    auto damc_track  = GetEff(d_tr_eff,   m_tr_eff,   "correction");
+    auto damc_trig   = GetEff(d_trig_eff, m_trig_eff, "correction");
+	auto final_damc_tot = (TH1D*)damc_l1->Clone();
+    final_damc_tot->Multiply(damc_tof);
+    final_damc_tot->Multiply(damc_track);
+    final_damc_tot->Multiply(damc_trig);
+	auto final_acc = (TH1D*)true_acc->Clone();
+	final_acc ->Multiply(final_damc_tot);
+    auto flux = (TH1D*)counts->Clone();
+    flux->Divide(lt);
+    flux->Divide(hwidth);
+    flux->Divide(final_acc);
+////WRITE////
+	outfile->WriteTObject(d_tof_eff,"d_tof_eff");
+	outfile->WriteTObject(d_l1_eff,"d_l1_eff");
+	outfile->WriteTObject(d_tr_eff,"d_tr_eff");
+	outfile->WriteTObject(d_trig_eff,"d_trig_eff");
+	outfile->WriteTObject(m_tof_eff,"m_tof_eff");
+	outfile->WriteTObject(m_l1_eff,"m_l1_eff");
+	outfile->WriteTObject(m_tr_eff,"m_tr_eff");
+	outfile->WriteTObject(m_trig_eff,"m_trig_eff");
+	outfile->WriteTObject(true_acc,"true_acc");
+	outfile->WriteTObject(lt,"lt");
+	outfile->WriteTObject(counts,"counts");
+	outfile->WriteTObject(flux,"flux");
+	outfile->WriteTObject(oldflux,"oldflux");
 	outfile->Close();
 }
 

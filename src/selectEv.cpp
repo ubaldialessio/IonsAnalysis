@@ -1,7 +1,9 @@
+#include "definition.h"
 #include "binning.h"
 
 void FillHistos(TH2D &histo, unsigned int charge, double Amass, double weight, NAIA::NAIAChain &chain, NAIA::Event &event);
 double GetDataMass(unsigned int charge);
+TString getIonPath(unsigned int charge);
 
 int main(int argc, char *argv[]) {
 
@@ -24,30 +26,29 @@ int main(int argc, char *argv[]) {
 	auto sample_tr    = new TH2D("", ";Utime;R(GV)", nTbins-1, Tbins, nRbins-1, Rbins);
 	auto pass_tr      = new TH2D("", ";Utime;R(GV)", nTbins-1, Tbins, nRbins-1, Rbins);;
 
-	auto noTriggers  = trg::HasTrigger(0);                	// 00000000
-	auto unbiased    = trg::HasTrigger(1)  ||             	// 00000001 (only unbiased ToF)
-	                   trg::HasTrigger(64) ||            	// 01000000 (only unbiased ECAL)
-	                   trg::HasTrigger(65);              	// 01000001 (unbiased ToF AND unbiased ECAL)
+	auto noTriggers  = trig::HasTrigger(0);                	// 00000000
+	auto unbiased    = trig::HasTrigger(1)||             	// 00000001 (only unbiased ToF)
+	                   trig::HasTrigger(64)||            	// 01000000 (only unbiased ECAL)
+	                   trig::HasTrigger(65);              	// 01000001 (unbiased ToF AND unbiased ECAL)
 	auto physics     = ns::Trigger::HasPhysicsTrigger();    // 00111110 (Any non-prescaled trigger)	
 
 
 	// this mask will check for charge > 2  according to both tracker or tof
 	NAIA::Category cat = NAIA::Category::ChargeGT2_Trk | NAIA::Category::ChargeGT2_Tof;
 
-	if (argc < 2) {
-	    printf("Usage: n");
-	    printf("%s <input root file> <output> n", argv[0]);
+	if (argc < 3) {
+		printf("Usage: \n");
+	    printf("%s <charge> <path/to/input.root> <output.root> \n", argv[0]);
 	    return 1;
 	}
-	TString infilename = argv[1], out = argv[2];
-
+	unsigned int charge=atoi(argv[1]);
+	TString infilename=argv[2],
+		   outname=argv[3],
+		   out, ionPath=getIonPath(charge);
 	//check if is a valid input
     bool validInput = true;
-	//check(); 
-
 	//process
 	if (validInput) {
-	
 		NAIA::NAIAChain chain;
 		if(infilename.Contains(".root") && filesystem::exists(infilename.Data()) ){
 		    chain.Add(infilename.Data());
@@ -60,6 +61,8 @@ int main(int argc, char *argv[]) {
 		}
 		chain.SetupBranches();
 		bool isMC = chain.IsMC();
+			if (isMC) out="/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/IonsSelected/"+ionPath+"mc/"+outname;
+	else out="/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/IonsSelected/"+ionPath+"dat/"+outname;
 		unsigned int utime, oldtime;
 		float reco_il1, reco_inn, beta, lt;
 		double gen, cutoff;
@@ -149,10 +152,7 @@ int main(int argc, char *argv[]) {
 							              "L1HitCut",
 							              "IsInL1",
 							              "GoodSecTrack",
-							              "L1 Ch Status",
 							              "L1 Charge In Range",
-							              "InnerL1Fid",
-							              "L1Fid",
 							              "Inner Charge Resolution <0.2",
 							              "L1NormRes"};
 				
@@ -208,95 +208,92 @@ int main(int argc, char *argv[]) {
 				 counters_l1Eff->Fill(icut_l1);
 				 icut_l1++;
 			};
-namespace ef = Efficiency::TriggerEffSel;
-namespace track = Efficiency::TrTrackEffSel;
 auto mysel =
 	ns::Trigger::HasPhysicsTrigger().AddPostHook(fill_counters_Sel) && //OK
 	ns::Tof::BetaInRange(0.0,inf,BTH).AddPostHook(fill_counters_Sel) && //OK
-	ns::Tof::ChargeInRange(6.0-0.75,6.0+0.75,UTC).AddPostHook(fill_counters_Sel) && //OK
+	ns::Tof::ChargeInRange(charge-0.75,charge+0.75,UTC).AddPostHook(fill_counters_Sel) && //OK
     (ns::Tof::GoodPathlength(0b0001) ||ns::Tof::GoodPathlength(0b0010) ).AddPostHook(fill_counters_Sel) && //OK
     ns::InnerTracker::HitPattern().AddPostHook(fill_counters_Sel) && //OK
     ns::InnerTracker::NGoodClustersGreaterThan(2, 0x10013D).AddPostHook(fill_counters_Sel) && //OK
     ns::InnerTracker::ChargeRMSLessThan(0.2, CRT).AddPostHook(fill_counters_Sel) && //OK
-    ns::InnerTracker::ChargeInRange(6.0-0.3,6.0+0.7,CRT).AddPostHook(fill_counters_Sel) && //OK
+    ns::InnerTracker::ChargeInRange(charge-0.3,charge+0.7,CRT).AddPostHook(fill_counters_Sel) && //OK
     ns::Track::ChiSquareLessThan(10.0, YSD, FIT, IL1).AddPostHook(fill_counters_Sel) && //OK
     ns::Track::ChiSquareLessThan(10.0, YSD, FIT, INN).AddPostHook(fill_counters_Sel) && //OK
     ns::Track::HitCut(1).AddPostHook(fill_counters_Sel) && //OK
-	ns::TrackerLayer::ChargeInRange(1,0,6.0+0.8,CRT).AddPostHook(fill_counters_Sel) && //OK
-	innTr::L1NormResidualLessThan(10.0,FIT).AddPostHook(fill_counters_Sel); //OK
+	ns::TrackerLayer::ChargeInRange(1,0,charge+0.8,CRT).AddPostHook(fill_counters_Sel) && //OK
+	InnerTracker::L1NormResidualLessThan(10.0,FIT).AddPostHook(fill_counters_Sel); //OK
 auto num_tof =
 	ns::Tof::BetaInRange(0.0,inf,BTH) && //OK
-	ns::Tof::ChargeInRange(6.0-0.75,6.0+0.75,UTC) && //OK
+	ns::Tof::ChargeInRange(charge-0.75,charge+0.75,UTC) && //OK
 	(ns::Tof::GoodPathlength(0b0001) || ns::Tof::GoodPathlength(0b0010)); //OK
 auto den_tof = 
 	ns::Trigger::HasPhysicsTrigger().AddPostHook(fill_counters_tofEff) && //OK
 	ns::InnerTracker::HitPattern().AddPostHook(fill_counters_tofEff) &&  //OK
-	ns::InnerTracker::ChargeInRange(6.0-0.3,6.0+0.7,CRT).AddPostHook(fill_counters_tofEff) && //OK
+	ns::InnerTracker::ChargeInRange(charge-0.3,charge+0.7,CRT).AddPostHook(fill_counters_tofEff) && //OK
 	ns::InnerTracker::NGoodClustersGreaterThan(2, 0x10013D).AddPostHook(fill_counters_tofEff) && //OK
 	ns::Track::ChiSquareLessThan(10.0, YSD, FIT, IL1).AddPostHook(fill_counters_tofEff) && //OK
 	ns::Track::ChiSquareLessThan(10.0, YSD, FIT, INN).AddPostHook(fill_counters_tofEff) && //OK
 	ns::Track::HitCut(1).AddPostHook(fill_counters_tofEff) && //OK
-	ms::IsInsideL1(FIT, INN, 0).AddPostHook(fill_counters_tofEff) && //OK
-	ms::HasGoodSecondTrTrack(FIT, INN, 0.2).AddPostHook(fill_counters_tofEff) && //OK
-	ns::TrackerLayer::ChargeInRange(1,0,6.0+0.8,CRT).AddPostHook(fill_counters_tofEff) && //OK
+	MySel::IsInsideL1(FIT, INN, 0).AddPostHook(fill_counters_tofEff) && //OK
+	MySel::HasGoodSecondTrTrack(FIT, INN, 0.2).AddPostHook(fill_counters_tofEff) && //OK
+	ns::TrackerLayer::ChargeInRange(1,0,charge+0.8,CRT).AddPostHook(fill_counters_tofEff) && //OK
 	ns::InnerTracker::ChargeRMSLessThan(0.2, CRT).AddPostHook(fill_counters_tofEff) && //OK
-	innTr::L1NormResidualLessThan(10.0,FIT).AddPostHook(fill_counters_tofEff); //OK	
+	InnerTracker::L1NormResidualLessThan(10.0,FIT).AddPostHook(fill_counters_tofEff); //OK	
 auto num_l1 =
-	ns::TrackerLayer::ChargeInRange(1,0,6.0+0.8,CRT) && 
+	ns::TrackerLayer::ChargeInRange(1,0,charge+0.8,CRT) && 
 	ns::Track::ChiSquareLessThan(10.0, YSD, FIT, IL1) && 
     ns::Track::L1FiducialVolume(FIT, IL1) && 
     ns::Track::HitCut(1) && 
-    ns::TrackerLayer::ChargeStatus(1) && 
-    innTr::L1NormResidualLessThan(10.0,FIT); 
+    InnerTracker::L1NormResidualLessThan(10.0,FIT); 
 auto den_l1 = 
 	ns::Trigger::HasPhysicsTrigger().AddPostHook(fill_counters_l1Eff) && 
 	ns::Tof::GoodPathlength(0b0011).AddPostHook(fill_counters_l1Eff) && 
 	ns::Tof::BetaInRange(0.0,inf,BTH).AddPostHook(fill_counters_l1Eff) && 
-	ns::Tof::ChargeInRange(6.0-0.2,6.0+0.2,UTC).AddPostHook(fill_counters_l1Eff) && 
+	ns::Tof::ChargeInRange(charge-0.2,charge+0.2,UTC).AddPostHook(fill_counters_l1Eff) && 
 	ns::InnerTracker::HitPattern().AddPostHook(fill_counters_l1Eff) && 
 	ns::InnerTracker::NHitsGreaterThan(4, YSD).AddPostHook(fill_counters_l1Eff) &&
 	ns::InnerTracker::NGoodClustersGreaterThan(2, 0x10013D).AddPostHook(fill_counters_l1Eff) &&
-	ns::InnerTracker::ChargeInRange(6.0-0.2,6.0+0.2,CRT).AddPostHook(fill_counters_l1Eff) && 
+	ns::InnerTracker::ChargeInRange(charge-0.2,charge+0.2,CRT).AddPostHook(fill_counters_l1Eff) && 
 	ns::Track::ChiSquareLessThan(10.0f, YSD, FIT, INN).AddPostHook(fill_counters_l1Eff) && 
 	ns::Track::L1FiducialVolume(FIT, INN).AddPostHook(fill_counters_l1Eff) && 
 	ns::Track::InnerFiducialVolume(FIT, INN).AddPostHook(fill_counters_l1Eff) && 
-	ms::IsInsideL1(FIT, INN, 0).AddPostHook(fill_counters_l1Eff) && 
+	MySel::IsInsideL1(FIT, INN, 0).AddPostHook(fill_counters_l1Eff) && 
 	trd::HasGoodTRDHits(6).AddPostHook(fill_counters_l1Eff) &&
 	ns::InnerTracker::ChargeRMSLessThan(0.2, CRT).AddPostHook(fill_counters_l1Eff); 
 auto num_track =
 	ns::InnerTracker::HitPattern() && //OK
 	ns::InnerTracker::NGoodClustersGreaterThan(2, 0x10013D) && //OK
 	ns::InnerTracker::ChargeRMSLessThan(0.2, CRT) && //OK
-    ns::InnerTracker::ChargeInRange(6.0f-0.3f,6.0f+0.7,CRT) && //OK
+    ns::InnerTracker::ChargeInRange(charge-0.3f,charge+0.7,CRT) && //OK
     ns::Track::ChiSquareLessThan(10.0f, YSD, FIT, INN); //OK
 auto den_track =
 	ns::Trigger::HasPhysicsTrigger().AddPostHook(fill_counters_trackEff) && //OK
 	TofSt::tofBetaInRange(0.4,inf,BTH).AddPostHook(fill_counters_trackEff) && //OK
 	track::UnbExtHitChargeStatus(EL1).AddPostHook(fill_counters_trackEff) && //OK
-	track::UnbExtHitChargeInRange(EL1,6,CRT,"").AddPostHook(fill_counters_trackEff) && //OK
+	track::UnbExtHitChargeInRange(EL1,charge,CRT,"").AddPostHook(fill_counters_trackEff) && //OK
 	track::IsInsideInner(4.5).AddPostHook(fill_counters_trackEff) && //OK
 	track::IsInsideL1(1).AddPostHook(fill_counters_trackEff) && //OK
 	track::InnerFiducialVolume().AddPostHook(fill_counters_trackEff) &&
 	track::L1FiducialVolume().AddPostHook(fill_counters_trackEff) &&
 	TofSt::tofChi2TimeLessThan(2).AddPostHook(fill_counters_trackEff) && //OK
 	TofSt::tofChi2CooLessThan(2).AddPostHook(fill_counters_trackEff) && //OK
-	ns::Tof::ChargeInRange(6.0-0.3,6.0+0.3, UTC).AddPostHook(fill_counters_trackEff) && //OK
-	ns::Tof::ChargeInRange(6.0-0.3,6.0+0.3, LTC).AddPostHook(fill_counters_trackEff) && //OK
-	ns::Tof::ChargeInRange(6.0-0.3,6.0+0.3, TOT).AddPostHook(fill_counters_trackEff); //OK
+	ns::Tof::ChargeInRange(charge-0.3,charge+0.3, UTC).AddPostHook(fill_counters_trackEff) && //OK
+	ns::Tof::ChargeInRange(charge-0.3,charge+0.3, LTC).AddPostHook(fill_counters_trackEff) && //OK
+	ns::Tof::ChargeInRange(charge-0.3,charge+0.3, TOT).AddPostHook(fill_counters_trackEff); //OK
 auto den_trig =
 	ns::Tof::GoodPathlength(0b0011).AddPostHook(fill_counters_trigEff) && //OK
 	ns::Tof::BetaInRange(0.0,inf,BTH).AddPostHook(fill_counters_trigEff) && //OK
-	ns::Tof::ChargeInRange(6.0-0.75,6.0+0.75,UTC).AddPostHook(fill_counters_trigEff) && //OK
+	ns::Tof::ChargeInRange(charge-0.75,charge+0.75,UTC).AddPostHook(fill_counters_trigEff) && //OK
     ns::InnerTracker::HitPattern().AddPostHook(fill_counters_trigEff) && //OK
 	ns::InnerTracker::NGoodClustersGreaterThan(2, 0x10013D).AddPostHook(fill_counters_trigEff) && //OK
-    ns::InnerTracker::ChargeInRange(6.0-0.3,6.0+0.7,CRT).AddPostHook(fill_counters_trigEff) && //OK
+    ns::InnerTracker::ChargeInRange(charge-0.3,charge+0.7,CRT).AddPostHook(fill_counters_trigEff) && //OK
     ns::Track::ChiSquareLessThan(10.0, YSD, FIT, IL1).AddPostHook(fill_counters_trigEff) && //OK
     ns::Track::ChiSquareLessThan(10.0, YSD, FIT, INN).AddPostHook(fill_counters_trigEff) && //OK
     ns::Track::HitCut(1).AddPostHook(fill_counters_trigEff) && //OK
-    innTr::L1NormResidualLessThan(10.0,FIT).AddPostHook(fill_counters_trigEff) && //OK
-	ns::TrackerLayer::ChargeInRange(1,0,6.0+0.8,CRT).AddPostHook(fill_counters_trigEff) && //OKok
+    InnerTracker::L1NormResidualLessThan(10.0,FIT).AddPostHook(fill_counters_trigEff) && //OK
+	ns::TrackerLayer::ChargeInRange(1,0,charge+0.8,CRT).AddPostHook(fill_counters_trigEff) && //OKok
 	ns::InnerTracker::ChargeRMSLessThan(0.2, CRT).AddPostHook(fill_counters_trigEff) && //OK
-	ef::IsInsideL1(FIT,IL1,0).AddPostHook(fill_counters_trigEff); //OK		
+	trig::IsInsideL1(FIT,IL1,0).AddPostHook(fill_counters_trigEff); //OK
 
 /////////////////// LOOP ///////////////////////////////
 		for(Event& event : chain) {
@@ -408,8 +405,7 @@ auto den_trig =
           		}
      		}
       		if (isMC) tree->Fill();	
-		} //event loop
-	
+		} //event loop	
 	//WRITE//
 	auto outfile = new TFile(out, "recreate");
 	outfile->WriteTObject(counters_Sel, "counters_Sel");
@@ -428,7 +424,6 @@ auto den_trig =
 	outfile->WriteTObject(sample_trig, "sample_trig");
 	outfile->WriteTObject(phys_trig, "phys_trig");
 	outfile->WriteTObject(unbiased_trig, "unbiased_trig");
-
 	if (isMC) {
 	    //outfile->WriteTObject(tree, "reco_gen");
 	    outfile->WriteTObject(mc_samp, "mc_samp");
@@ -436,12 +431,12 @@ auto den_trig =
 	    outfile->WriteTObject(mc_pass, "mc_pass");
 	    //outfile->WriteTObject(corr_mc_pass, "corr_mc_pass");
 	}
-
-	
 	outfile->Close();
 	} //valid input
 } //main
 
+
+//FUNCTION DEFINITION
 void FillHistos(TH2D &histo, unsigned int charge, double Amass, double weight, NAIA::NAIAChain &chain,  NAIA::Event &event) {
   bool IsMC = chain.IsMC();
   float IGRFCutoff;
@@ -450,7 +445,6 @@ void FillHistos(TH2D &histo, unsigned int charge, double Amass, double weight, N
     IGRFCutoff = rti_info.MaxIGRFCutoff[3][1];
   } else
     IGRFCutoff = event.mcTruthBase->Primary.GetGenMomentum() / event.mcTruthBase->Primary.Z;
-
   auto utime = event.header->UTCTime;
   float Beta = event.tofBaseSt->Beta[NAIA::Tof::BetaType::BetaH];
   const float amu = 0.93146;
@@ -461,7 +455,6 @@ void FillHistos(TH2D &histo, unsigned int charge, double Amass, double weight, N
   if (NAIA::ContainsKeys(event.ecalBase->Energy, NAIA::Ecal::EnergyRecoType::EnergyD)) {
     EnergyD = event.ecalBase->Energy[NAIA::Ecal::EnergyRecoType::EnergyD];
   }
-
   if (BetaRig <= 5) {
     histo.Fill(utime, BetaRig, weight);
   } else if (IGRFCutoff > 5 && IGRFCutoff <= 30) {
@@ -470,7 +463,6 @@ void FillHistos(TH2D &histo, unsigned int charge, double Amass, double weight, N
     histo.Fill(utime, EnergyD, weight);
   }
 }
-
 
 double GetDataMass(unsigned int charge) {
   double A = 0;
@@ -509,6 +501,52 @@ double GetDataMass(unsigned int charge) {
     break;
   case 16:
     A = 32;
+    break;
+  }
+  return A;
+}
+
+TString getIonPath(unsigned int charge) {
+TString A  = "";
+  switch (charge) {
+  case 1:
+    A = "Pr/";
+    break;
+  case 2:
+    A = "He/";
+    break;
+  case 3:
+    A = "Li/";
+    break;
+  case 4:
+    A = "Be/";
+    break;
+  case 5:
+    A = "B/";
+    break;
+  case 6:
+    A = "C/";
+    break;
+  case 7:
+    A = "N/";
+    break;
+  case 8:
+    A = "O/";
+    break;
+  case 9:
+    A = "F/";
+    break;
+  case 10:
+    A = "Ne/";
+    break;
+  case 11:
+    A = "Na/";
+    break;
+  case 12:
+    A = "Mg/";
+    break;
+  case 13:
+    A = "Al/";
     break;
   }
   return A;

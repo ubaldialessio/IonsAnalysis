@@ -1,4 +1,6 @@
-#include "definition.h"
+#ifndef BINNING_H
+#define BINNING_H
+#include "includes.h"
 
 const int nLogbins = 1000;
 double Logbins[nLogbins] = {
@@ -591,3 +593,139 @@ TTimeStamp tStartTime{20110515u, 0u, 0u};
 
   TTimeStamp tStopTime(tStartTime.GetSec() + nTimebins_ams02n * bartel, 0);
   std::array<double, nTimebins_ams02n> Timebins_ams02n{};
+
+
+//////spfit///////
+#define Nmax 1000
+int NODES = 0, NPOINTS = 0;
+
+void Spline(int n, double *x, double *y, double *b, double *d){
+  double u[Nmax];
+  d[0] = u[0] = 0;
+  if (b) {
+	  d[0] = -0.5;
+    u[0] = (3/(x[1]-x[0]))*((y[1]-y[0])/(x[1]-x[0])-b[0]);
+  }
+  for (int i = 1; i < n-1; i++) {
+	  double s = (x[i]-x[i-1])/(x[i+1]-x[i-1]);
+    double p = s*d[i-1]+2;
+    d[i] = (s-1)/p;
+    u[i] = (y[i+1]-y[i])/(x[i+1]-x[i])-(y[i]-y[i-1])/(x[i]-x[i-1]);
+    u[i] = (6*u[i]/(x[i+1]-x[i-1])-s*u[i-1])/p;
+  }
+  double q = 0, v = 0;
+  if (b) {
+	  q = 0.5;
+    v = (3/(x[n-1]-x[n-2]))*(b[1]-(y[n-1]-y[n-2])/(x[n-1]-x[n-2]));
+  }
+  d[n-1] = (v-q*u[n-2])/(q*d[n-2]+1);
+  for (int i = n-2; i >= 0; i--) d[i] = d[i]*d[i+1]+u[i];
+}
+
+double Splint(int n, double *xn, double *yn, double *d, double x){
+  int i1 = 0, i2 = n-1;
+  while (i2-i1 > 1) {
+	int i = (i2+i1)/2;
+    if (xn[i] > x) i2 = i;
+    else i1 = i;
+  }
+  double h = xn[i2]-xn[i1];
+  if (h == 0) return 0;
+  double a  = (xn[i2]-x)/h;
+  double b  = (x-xn[i1])/h;
+  double a3 = a*a*a;
+  double b3 = b*b*b;
+  double c  = 0;
+  return a*yn[i1]+b*yn[i2]+((a3-a)*d[i1]+(b3-b)*d[i2])*(h*h)/6+c;
+}
+
+double SpFunc(double *xp, double *par){
+  // Spline function
+  // par[0:n-1]   : Nodes x
+  // par[n:n*2-1] : Nodes y
+  // par[n*2]     : Derivative (dy/dx) of lower boundary
+  // par[n*2+1]   : Derivative (dy/dx) of upper boundary
+  static double ps[Nmax*2+2] = { 0, 0 };
+  static double xn[Nmax];
+  static double d2[Nmax];
+  int chk = 1;
+  for (int i = 0; i < NODES*2+2; i++) if (ps[i] != par[i]) { chk = 0; break; }
+  if (!chk) {
+	  for (int i = 0; i < NODES*2+2; i++) ps[i] = par[i];
+    for (int i = 0; i < NODES; i++) xn[i] = (par[i] > 0) ? TMath::Log10(par[i]) : par[i];
+    Spline(NODES, xn, &par[NODES], &par[NODES*2], d2);
+  }
+  double x = xp[0];
+  if (x > 0) x = TMath::Log10(x);
+  double y = Splint(NODES, xn, &par[NODES], d2, x);
+  if (x < xn[0])       { double dx = x-xn[0];       y = par[NODES]+par[NODES*2]*dx; }
+  if (x > xn[NODES-1]) { double dx = x-xn[NODES-1]; y = par[NODES*2-1]+par[NODES*2+1]*dx;}
+  return y;
+}
+
+TH1D *autospline(TH1D *histo, double xmin, double xmax, int llim = 3, int hlim = 20){
+
+  int nbins = histo->GetNbinsX()+1;
+  double bins[nbins];
+  double *ci = new double[nRbins], *hx = new double[nRbins];
+  for(int i=0; i<nbins; ++i) bins[i]=TMath::Log10(histo->GetBinLowEdge(i+1)+1);
+  auto histo_log = new TH1D("", "", nbins-1, bins);
+  for(int i=1; i<=histo_log->GetNbinsX(); ++i){
+    histo_log->SetBinContent(i, histo->GetBinContent(i));
+    histo_log->SetBinError(i, histo->GetBinError(i));
+  }
+  double log_min = TMath::Log10(xmin+1);
+  double log_max = TMath::Log10(xmax+1);
+
+  TH1D *final_histo;
+  auto final_histo_temp = (TH1D*)hist_rig->Clone();
+  for(int i=0; i<final_histo_temp->GetNbinsX(); i++)
+    hx[i]=TMath::Log10(final_histo_temp->GetBinCenter(i+1)+1);
+  double bic = 100000, chi2;
+  TString title;
+
+  for(NODES=llim; NODES<hlim; NODES++){
+    double knots[NODES];
+    for (int i = 0; i < NODES; i++) knots[i] = log_min + i * (log_max-log_min)/(NODES-1);
+    auto spline = new TF1("", SpFunc, log_min, log_max, NODES*2+2);
+    for (int i = 0; i < NODES; i++){
+      if (0 & (1<<i)) spline->SetParameter(i, knots[i]); //nodes x
+      else            spline->FixParameter(i, knots[i]);
+      spline->SetParameter(i+NODES, histo_log->GetBinContent(histo_log->FindBin(knots[i]))); //nodes y
+    }
+    spline->FixParameter(NODES*2+1, 0);
+    histo_log->Fit(spline, "Q0", "", log_min, log_max);
+    NPOINTS = spline->GetNumberFitPoints();
+    (TVirtualFitter::GetFitter())->GetConfidenceIntervals(nRbins, 1, hx, ci, 0.68);
+    for(int i = 0; i < final_histo_temp->GetNbinsX(); i++){
+	  final_histo_temp->SetBinContent(i+1, spline->Eval(hx[i]));
+      final_histo_temp->SetBinError(i+1, ci[i]);
+    }
+    int ndf = (NPOINTS-NODES);
+    chi2 = spline->GetChisquare();
+    double new_bic = (chi2+NODES*log(NPOINTS))/ndf;
+    if(new_bic>0 && new_bic<bic){
+	  bic = new_bic;
+      final_histo = (TH1D*)final_histo_temp->Clone();
+      title = Form("%i uniform knots, Chi2: %f, BIC: %f.", NODES, chi2/ndf, bic);
+    }
+    delete spline;
+  }
+
+  final_histo->SetTitle(title);
+  return final_histo;
+
+}
+
+TF1 *spfit(TH1D *h, int nodes, double xmin, double xmax){
+  NODES = nodes;
+  auto func = new TF1("func", SpFunc, xmin, xmax, NODES*2+2);
+  for (int i = 0; i < NODES; i++){
+    func->FixParameter(i, xmin + i * (xmax-xmin)/(NODES-1)); //nodes x
+    func->SetParameter(i+NODES, h->Interpolate(func->GetParameter(i))); //nodes y
+  }
+  func->FixParameter(NODES*2+1, 0);
+  h->Fit(func, "Q0", "", xmin, xmax);
+  return h->GetFunction("func");
+}
+#endif

@@ -9,7 +9,19 @@ target_link_libraries(checkVar NAIA::NAIAChain NSL::NSLSelections)
 target_include_directories(checkVar PRIVATE include/)
 set_target_properties(checkVar PROPERTIES RUNTIME_OUTPUT_DIRECTORY ./../bin/)
 
-add_executable(selectEv src/selectEv.cpp)
+# Add TrTrackEffSel.cpp to the project sources
+set(SOURCES
+    src/selectEv.cpp
+    include/Efficiencies/Tracker.cpp  # Add this line
+    include/Efficiencies/Trigger.cpp
+    include/Efficiencies/InnerTracker.cpp
+    include/Efficiencies/TofStandalone.cpp
+    include/Efficiencies/TRD.cpp
+    include/Efficiencies/RTI.cpp
+    include/Efficiencies/MySel.cpp
+)
+
+add_executable(selectEv ${SOURCES})
 target_link_libraries(selectEv NAIA::NAIAChain NSL::NSLSelections)
 target_include_directories(selectEv PRIVATE include/)
 set_target_properties(selectEv PROPERTIES RUNTIME_OUTPUT_DIRECTORY ./../bin/)
