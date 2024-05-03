@@ -10,7 +10,7 @@ target_include_directories(checkVar PRIVATE include/)
 set_target_properties(checkVar PROPERTIES RUNTIME_OUTPUT_DIRECTORY ./../bin/)
 
 # Add TrTrackEffSel.cpp to the project sources
-set(SOURCES
+set(SOURCES_selectEv
     src/selectEv.cpp
     include/Efficiencies/Tracker.cpp  # Add this line
     include/Efficiencies/Trigger.cpp
@@ -21,7 +21,18 @@ set(SOURCES
     include/Efficiencies/MySel.cpp
 )
 
-add_executable(selectEv ${SOURCES})
+set(SOURCES_fragment
+    src/fragmentation.cpp
+    include/Efficiencies/Tracker.cpp  # Add this line
+    include/Efficiencies/Trigger.cpp
+    include/Efficiencies/InnerTracker.cpp
+    include/Efficiencies/TofStandalone.cpp
+    include/Efficiencies/TRD.cpp
+    include/Efficiencies/RTI.cpp
+    include/Efficiencies/MySel.cpp
+)
+
+add_executable(selectEv ${SOURCES_selectEv})
 target_link_libraries(selectEv NAIA::NAIAChain NSL::NSLSelections)
 target_include_directories(selectEv PRIVATE include/)
 set_target_properties(selectEv PROPERTIES RUNTIME_OUTPUT_DIRECTORY ./../bin/)
@@ -35,3 +46,8 @@ add_executable(eff src/eff.cpp)
 target_link_libraries(eff NAIA::NAIAChain NSL::NSLSelections)
 target_include_directories(eff PRIVATE include/)
 set_target_properties(eff PROPERTIES RUNTIME_OUTPUT_DIRECTORY ./../bin/)
+
+add_executable(fragmentation ${SOURCES_fragment})
+target_link_libraries(fragmentation NAIA::NAIAChain NSL::NSLSelections)
+target_include_directories(fragmentation PRIVATE include/)
+set_target_properties(fragmentation PROPERTIES RUNTIME_OUTPUT_DIRECTORY ./../bin/)

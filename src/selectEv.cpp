@@ -1,9 +1,9 @@
 #include "definition.h"
 #include "binning.h"
+#include "utils.h"
 
 void FillHistos(TH2D &histo, unsigned int charge, double Amass, double weight, NAIA::NAIAChain &chain, NAIA::Event &event);
 double GetDataMass(unsigned int charge);
-TString getIonPath(unsigned int charge);
 
 int main(int argc, char *argv[]) {
 
@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
 	auto phys_trig    = new TH2D("", ";Utime;R(GV)", nTbins-1, Tbins, nRbins-1, Rbins);
 	auto unbiased_trig= new TH2D("", ";Utime;R(GV)", nTbins-1, Tbins, nRbins-1, Rbins);
 	auto sample_tr    = new TH2D("", ";Utime;R(GV)", nTbins-1, Tbins, nRbins-1, Rbins);
-	auto pass_tr      = new TH2D("", ";Utime;R(GV)", nTbins-1, Tbins, nRbins-1, Rbins);;
+	auto pass_tr      = new TH2D("", ";Utime;R(GV)", nTbins-1, Tbins, nRbins-1, Rbins);
 
 	auto noTriggers  = trig::HasTrigger(0);                	// 00000000
 	auto unbiased    = trig::HasTrigger(1)||             	// 00000001 (only unbiased ToF)
@@ -61,14 +61,14 @@ int main(int argc, char *argv[]) {
 		}
 		chain.SetupBranches();
 		bool isMC = chain.IsMC();
-			if (isMC) out="/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/IonsSelected/"+ionPath+"mc/"+outname;
-	else out="/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/IonsSelected/"+ionPath+"dat/"+outname;
+		if (isMC) out="/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/IonsSelected/"+ionPath+"/mc/"+outname;
+		else out="/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/IonsSelected/"+ionPath+"/dat/"+outname;
 		unsigned int utime, oldtime;
 		float reco_il1, reco_inn, beta, lt;
 		double gen, cutoff;
 		double Amass = 1;
 		double weight = 1;
-		Amass = GetDataMass(6); // Getting atomic mass number
+		Amass = GetDataMass(charge); // Getting atomic mass number
 		if(isMC){
 		    tree->Branch("utime", &utime);
 		    tree->Branch("reco_inn", &reco_inn);
@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
 				              "TofGoodPath",
 				              "InnerHitPattern",
 				              "NGoodCl",
-				              "InnerChReso<0.2",
+				              "InnerChReso<0.55",
 				              "InnerChInRange",
 				              "Inner #chi^{2}_{Y}",
 				              "InnerL1 #chi^{2}_{Y}",
@@ -153,7 +153,7 @@ int main(int argc, char *argv[]) {
 							              "IsInL1",
 							              "GoodSecTrack",
 							              "L1 Charge In Range",
-							              "Inner Charge Resolution <0.2",
+							              "Inner Charge Resolution <0.55",
 							              "L1NormRes"};
 				
 			auto ncuts_tofEff = labels_tofEff.size();
@@ -176,7 +176,7 @@ int main(int argc, char *argv[]) {
 							              "L1 Hit",
 							              "L1NormRes",
 							              "L1 Charge In Range",
-							              "Inner Charge Resolution <0.2",
+							              "Inner Charge Resolution <0.55",
 							              "IsInsideL1"};				
 			auto ncuts_trigEff = labels_trigEff.size();
 			auto counters_trigEff = new TH1D("counters_trigEff", "", ncuts_trigEff, -0.5, ncuts_trigEff - 0.5);
@@ -200,7 +200,7 @@ int main(int argc, char *argv[]) {
 							              "InnerFid",
 							              "IsInL1",
 							              "GoodTRDHits",
-							              "Inner Charge Resolution <0.2"};				
+							              "InnerChRMS <0.55"};				
 			auto ncuts_l1Eff = labels_l1Eff.size();
 			auto counters_l1Eff = new TH1D("counters_l1Eff", "", ncuts_l1Eff, -0.5, ncuts_l1Eff - 0.5);
 			auto fill_counters_l1Eff = [&counters_l1Eff, &icut_l1, &labels_l1Eff](Event &event) {
@@ -211,36 +211,36 @@ int main(int argc, char *argv[]) {
 auto mysel =
 	ns::Trigger::HasPhysicsTrigger().AddPostHook(fill_counters_Sel) && //OK
 	ns::Tof::BetaInRange(0.0,inf,BTH).AddPostHook(fill_counters_Sel) && //OK
-	ns::Tof::ChargeInRange(charge-0.75,charge+0.75,UTC).AddPostHook(fill_counters_Sel) && //OK
+	ns::Tof::ChargeInRange(static_cast<float>(charge)-0.75,static_cast<float>(charge)+0.75,UTC).AddPostHook(fill_counters_Sel) && //OK
     (ns::Tof::GoodPathlength(0b0001) ||ns::Tof::GoodPathlength(0b0010) ).AddPostHook(fill_counters_Sel) && //OK
     ns::InnerTracker::HitPattern().AddPostHook(fill_counters_Sel) && //OK
     ns::InnerTracker::NGoodClustersGreaterThan(2, 0x10013D).AddPostHook(fill_counters_Sel) && //OK
-    ns::InnerTracker::ChargeRMSLessThan(0.2, CRT).AddPostHook(fill_counters_Sel) && //OK
-    ns::InnerTracker::ChargeInRange(charge-0.3,charge+0.7,CRT).AddPostHook(fill_counters_Sel) && //OK
+    ns::InnerTracker::ChargeRMSLessThan(0.55, CRT).AddPostHook(fill_counters_Sel) && //OK
+    ns::InnerTracker::ChargeInRange(static_cast<float>(charge)-0.3,static_cast<float>(charge)+0.7,CRT).AddPostHook(fill_counters_Sel) && //OK
     ns::Track::ChiSquareLessThan(10.0, YSD, FIT, IL1).AddPostHook(fill_counters_Sel) && //OK
     ns::Track::ChiSquareLessThan(10.0, YSD, FIT, INN).AddPostHook(fill_counters_Sel) && //OK
     ns::Track::HitCut(1).AddPostHook(fill_counters_Sel) && //OK
-	ns::TrackerLayer::ChargeInRange(1,0,charge+0.8,CRT).AddPostHook(fill_counters_Sel) && //OK
+	ns::TrackerLayer::ChargeInRange(1,0,static_cast<float>(charge)+0.8,CRT).AddPostHook(fill_counters_Sel) && //OK
 	InnerTracker::L1NormResidualLessThan(10.0,FIT).AddPostHook(fill_counters_Sel); //OK
 auto num_tof =
 	ns::Tof::BetaInRange(0.0,inf,BTH) && //OK
-	ns::Tof::ChargeInRange(charge-0.75,charge+0.75,UTC) && //OK
+	ns::Tof::ChargeInRange(static_cast<float>(charge)-0.75,static_cast<float>(charge)+0.75,UTC) && //OK
 	(ns::Tof::GoodPathlength(0b0001) || ns::Tof::GoodPathlength(0b0010)); //OK
 auto den_tof = 
 	ns::Trigger::HasPhysicsTrigger().AddPostHook(fill_counters_tofEff) && //OK
 	ns::InnerTracker::HitPattern().AddPostHook(fill_counters_tofEff) &&  //OK
-	ns::InnerTracker::ChargeInRange(charge-0.3,charge+0.7,CRT).AddPostHook(fill_counters_tofEff) && //OK
+	ns::InnerTracker::ChargeInRange(static_cast<float>(charge)-0.3,static_cast<float>(charge)+0.7,CRT).AddPostHook(fill_counters_tofEff) && //OK
 	ns::InnerTracker::NGoodClustersGreaterThan(2, 0x10013D).AddPostHook(fill_counters_tofEff) && //OK
 	ns::Track::ChiSquareLessThan(10.0, YSD, FIT, IL1).AddPostHook(fill_counters_tofEff) && //OK
 	ns::Track::ChiSquareLessThan(10.0, YSD, FIT, INN).AddPostHook(fill_counters_tofEff) && //OK
 	ns::Track::HitCut(1).AddPostHook(fill_counters_tofEff) && //OK
 	MySel::IsInsideL1(FIT, INN, 0).AddPostHook(fill_counters_tofEff) && //OK
 	MySel::HasGoodSecondTrTrack(FIT, INN, 0.2).AddPostHook(fill_counters_tofEff) && //OK
-	ns::TrackerLayer::ChargeInRange(1,0,charge+0.8,CRT).AddPostHook(fill_counters_tofEff) && //OK
-	ns::InnerTracker::ChargeRMSLessThan(0.2, CRT).AddPostHook(fill_counters_tofEff) && //OK
+	ns::TrackerLayer::ChargeInRange(1,0,static_cast<float>(charge)+0.8,CRT).AddPostHook(fill_counters_tofEff) && //OK
+	ns::InnerTracker::ChargeRMSLessThan(0.55, CRT).AddPostHook(fill_counters_tofEff) && //OK
 	InnerTracker::L1NormResidualLessThan(10.0,FIT).AddPostHook(fill_counters_tofEff); //OK	
 auto num_l1 =
-	ns::TrackerLayer::ChargeInRange(1,0,charge+0.8,CRT) && 
+	ns::TrackerLayer::ChargeInRange(1,0,static_cast<float>(charge)+0.8,CRT) && 
 	ns::Track::ChiSquareLessThan(10.0, YSD, FIT, IL1) && 
     ns::Track::L1FiducialVolume(FIT, IL1) && 
     ns::Track::HitCut(1) && 
@@ -249,50 +249,50 @@ auto den_l1 =
 	ns::Trigger::HasPhysicsTrigger().AddPostHook(fill_counters_l1Eff) && 
 	ns::Tof::GoodPathlength(0b0011).AddPostHook(fill_counters_l1Eff) && 
 	ns::Tof::BetaInRange(0.0,inf,BTH).AddPostHook(fill_counters_l1Eff) && 
-	ns::Tof::ChargeInRange(charge-0.2,charge+0.2,UTC).AddPostHook(fill_counters_l1Eff) && 
+	ns::Tof::ChargeInRange(static_cast<float>(charge)-0.2,static_cast<float>(charge)+0.2,UTC).AddPostHook(fill_counters_l1Eff) && 
 	ns::InnerTracker::HitPattern().AddPostHook(fill_counters_l1Eff) && 
 	ns::InnerTracker::NHitsGreaterThan(4, YSD).AddPostHook(fill_counters_l1Eff) &&
 	ns::InnerTracker::NGoodClustersGreaterThan(2, 0x10013D).AddPostHook(fill_counters_l1Eff) &&
-	ns::InnerTracker::ChargeInRange(charge-0.2,charge+0.2,CRT).AddPostHook(fill_counters_l1Eff) && 
+	ns::InnerTracker::ChargeInRange(static_cast<float>(charge)-0.2,static_cast<float>(charge)+0.2,CRT).AddPostHook(fill_counters_l1Eff) && 
 	ns::Track::ChiSquareLessThan(10.0f, YSD, FIT, INN).AddPostHook(fill_counters_l1Eff) && 
 	ns::Track::L1FiducialVolume(FIT, INN).AddPostHook(fill_counters_l1Eff) && 
 	ns::Track::InnerFiducialVolume(FIT, INN).AddPostHook(fill_counters_l1Eff) && 
 	MySel::IsInsideL1(FIT, INN, 0).AddPostHook(fill_counters_l1Eff) && 
-	trd::HasGoodTRDHits(6).AddPostHook(fill_counters_l1Eff) &&
-	ns::InnerTracker::ChargeRMSLessThan(0.2, CRT).AddPostHook(fill_counters_l1Eff); 
+	trd::HasGoodTRDHits(charge).AddPostHook(fill_counters_l1Eff) &&
+	ns::InnerTracker::ChargeRMSLessThan(0.55, CRT).AddPostHook(fill_counters_l1Eff); 
 auto num_track =
 	ns::InnerTracker::HitPattern() && //OK
 	ns::InnerTracker::NGoodClustersGreaterThan(2, 0x10013D) && //OK
-	ns::InnerTracker::ChargeRMSLessThan(0.2, CRT) && //OK
-    ns::InnerTracker::ChargeInRange(charge-0.3f,charge+0.7,CRT) && //OK
+	ns::InnerTracker::ChargeRMSLessThan(0.55, CRT) && //OK
+    ns::InnerTracker::ChargeInRange(static_cast<float>(charge)-0.3f,static_cast<float>(charge)+0.7,CRT) && //OK
     ns::Track::ChiSquareLessThan(10.0f, YSD, FIT, INN); //OK
 auto den_track =
 	ns::Trigger::HasPhysicsTrigger().AddPostHook(fill_counters_trackEff) && //OK
 	TofSt::tofBetaInRange(0.4,inf,BTH).AddPostHook(fill_counters_trackEff) && //OK
 	track::UnbExtHitChargeStatus(EL1).AddPostHook(fill_counters_trackEff) && //OK
-	track::UnbExtHitChargeInRange(EL1,charge,CRT,"").AddPostHook(fill_counters_trackEff) && //OK
+	track::UnbExtHitChargeInRange(EL1,static_cast<float>(charge),CRT,"").AddPostHook(fill_counters_trackEff) && //OK
 	track::IsInsideInner(4.5).AddPostHook(fill_counters_trackEff) && //OK
 	track::IsInsideL1(1).AddPostHook(fill_counters_trackEff) && //OK
 	track::InnerFiducialVolume().AddPostHook(fill_counters_trackEff) &&
 	track::L1FiducialVolume().AddPostHook(fill_counters_trackEff) &&
 	TofSt::tofChi2TimeLessThan(2).AddPostHook(fill_counters_trackEff) && //OK
 	TofSt::tofChi2CooLessThan(2).AddPostHook(fill_counters_trackEff) && //OK
-	ns::Tof::ChargeInRange(charge-0.3,charge+0.3, UTC).AddPostHook(fill_counters_trackEff) && //OK
-	ns::Tof::ChargeInRange(charge-0.3,charge+0.3, LTC).AddPostHook(fill_counters_trackEff) && //OK
-	ns::Tof::ChargeInRange(charge-0.3,charge+0.3, TOT).AddPostHook(fill_counters_trackEff); //OK
+	ns::Tof::ChargeInRange(static_cast<float>(charge)-0.3,static_cast<float>(charge)+0.3, UTC).AddPostHook(fill_counters_trackEff) && //OK
+	ns::Tof::ChargeInRange(static_cast<float>(charge)-0.3,static_cast<float>(charge)+0.3, LTC).AddPostHook(fill_counters_trackEff) && //OK
+	ns::Tof::ChargeInRange(static_cast<float>(charge)-0.3,static_cast<float>(charge)+0.3, TOT).AddPostHook(fill_counters_trackEff); //OK
 auto den_trig =
 	ns::Tof::GoodPathlength(0b0011).AddPostHook(fill_counters_trigEff) && //OK
 	ns::Tof::BetaInRange(0.0,inf,BTH).AddPostHook(fill_counters_trigEff) && //OK
-	ns::Tof::ChargeInRange(charge-0.75,charge+0.75,UTC).AddPostHook(fill_counters_trigEff) && //OK
+	ns::Tof::ChargeInRange(static_cast<float>(charge)-0.75,static_cast<float>(charge)+0.75,UTC).AddPostHook(fill_counters_trigEff) && //OK
     ns::InnerTracker::HitPattern().AddPostHook(fill_counters_trigEff) && //OK
 	ns::InnerTracker::NGoodClustersGreaterThan(2, 0x10013D).AddPostHook(fill_counters_trigEff) && //OK
-    ns::InnerTracker::ChargeInRange(charge-0.3,charge+0.7,CRT).AddPostHook(fill_counters_trigEff) && //OK
+    ns::InnerTracker::ChargeInRange(static_cast<float>(charge)-0.3,static_cast<float>(charge)+0.7,CRT).AddPostHook(fill_counters_trigEff) && //OK
     ns::Track::ChiSquareLessThan(10.0, YSD, FIT, IL1).AddPostHook(fill_counters_trigEff) && //OK
     ns::Track::ChiSquareLessThan(10.0, YSD, FIT, INN).AddPostHook(fill_counters_trigEff) && //OK
     ns::Track::HitCut(1).AddPostHook(fill_counters_trigEff) && //OK
     InnerTracker::L1NormResidualLessThan(10.0,FIT).AddPostHook(fill_counters_trigEff) && //OK
-	ns::TrackerLayer::ChargeInRange(1,0,charge+0.8,CRT).AddPostHook(fill_counters_trigEff) && //OKok
-	ns::InnerTracker::ChargeRMSLessThan(0.2, CRT).AddPostHook(fill_counters_trigEff) && //OK
+	ns::TrackerLayer::ChargeInRange(1,0,static_cast<float>(charge)+0.8,CRT).AddPostHook(fill_counters_trigEff) && //OKok
+	ns::InnerTracker::ChargeRMSLessThan(0.55, CRT).AddPostHook(fill_counters_trigEff) && //OK
 	trig::IsInsideL1(FIT,IL1,0).AddPostHook(fill_counters_trigEff); //OK
 
 /////////////////// LOOP ///////////////////////////////
@@ -370,8 +370,8 @@ auto den_trig =
 
 			////TRACK EFF////
       		if(den_track(event)) {
-      			FillHistos(*sample_tr,6,Amass,weight,chain,event);
-      			if(num_track(event)) FillHistos(*pass_tr,6,Amass,weight,chain,event);
+      			FillHistos(*sample_tr,charge,Amass,weight,chain,event);
+      			if(num_track(event)) FillHistos(*pass_tr,charge,Amass,weight,chain,event);
       		}
 			////TRIGGER EFF/////
       		if(den_trig(event)) {
@@ -501,52 +501,6 @@ double GetDataMass(unsigned int charge) {
     break;
   case 16:
     A = 32;
-    break;
-  }
-  return A;
-}
-
-TString getIonPath(unsigned int charge) {
-TString A  = "";
-  switch (charge) {
-  case 1:
-    A = "Pr/";
-    break;
-  case 2:
-    A = "He/";
-    break;
-  case 3:
-    A = "Li/";
-    break;
-  case 4:
-    A = "Be/";
-    break;
-  case 5:
-    A = "B/";
-    break;
-  case 6:
-    A = "C/";
-    break;
-  case 7:
-    A = "N/";
-    break;
-  case 8:
-    A = "O/";
-    break;
-  case 9:
-    A = "F/";
-    break;
-  case 10:
-    A = "Ne/";
-    break;
-  case 11:
-    A = "Na/";
-    break;
-  case 12:
-    A = "Mg/";
-    break;
-  case 13:
-    A = "Al/";
     break;
   }
   return A;
