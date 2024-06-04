@@ -17,7 +17,33 @@ int main(int argc, char *argv[]) {
 	auto lvt_25	  	  = new TH2D("", ";Utime;R(GV)", nTbins-1, Tbins, nRbins-1, Rbins);
 	auto rigidity     = new TH2D("", ";Utime;R(GV)", nTbins-1, Tbins, nRbins-1, Rbins);
 	auto L1charge     = new TH1D("", "L1 Charge (Z)", 300, 0, 20);
-	auto allRigL1	  = new TH1D("", "R(GV)", nRbins-1, Rbins);
+	auto allRigL1	  = new TH1D("", ";R(GV)", nRbins-1, Rbins);
+	auto genRig		  = (TH1D*)hist_log->Clone("genRig");
+
+	// setup binning template useed for L1/L2 templates.
+	const int nRigbins_LightIons = 24;
+	const double Rigbins_LightIons[nRigbins_LightIons] = {0.8,  1.16, 1.51, 1.92, 2.40,  2.97, 3.64, 4.43,
+	                                                  5.37, 6.47, 7.76, 9.26, 11.00, 13.0, 15.3, 18.0,
+	                                                  21.1, 24.7, 28.8, 33.5, 38.9,  45.1, 52.2, 5000};
+	
+	const int nRigbins_HeavyIons = 21;
+	const double Rigbins_HeavyIons[nRigbins_HeavyIons] = {0.8,  2.40, 2.97, 3.64, 4.43, 5.37, 6.47, 7.76, 9.26, 11.00, 13.0,
+	                                                  15.3, 18.0, 21.1, 24.7, 28.8, 33.5, 38.9, 45.1, 52.2, 5000};
+	TList *l1TemplateList = new TList();
+	TList *l2TemplateList = new TList();
+	auto rigBinTemplate = new TH1D("RigTemplateLightIons", "R (GV)", nRigbins_LightIons - 1, Rigbins_LightIons);
+	
+	for (Int_t ibin = 0; ibin < rigBinTemplate->GetNbinsX(); ibin++) 
+	    l1TemplateList->Add(new TH1D(Form("L1Template_%03i", ibin),
+	                               Form("%5.3f < R (GV) < %5.3f;Q_{L1X};Counts", rigBinTemplate->GetBinLowEdge(ibin + 1),
+	                                    rigBinTemplate->GetBinLowEdge(ibin + 2)),
+	                               600, 0, 20));
+	                               
+	for (Int_t ibin = 0; ibin < rigBinTemplate->GetNbinsX(); ibin++) 
+    	l2TemplateList->Add(new TH1D(Form("L2Template_%03i", ibin),
+                               Form("%5.3f < R (GV) < %5.3f;Q_{L2X};Counts", rigBinTemplate->GetBinLowEdge(ibin + 1),
+                                    rigBinTemplate->GetBinLowEdge(ibin + 2)),
+                               600, 0, 20));
 
 	// this mask will check for charge > 2  according to both tracker or tof
 	NAIA::Category cat = NAIA::Category::ChargeGT2_Trk | NAIA::Category::ChargeGT2_Tof;
@@ -81,218 +107,44 @@ int main(int argc, char *argv[]) {
 		      }
 		    }
 		}
-		/*unsigned int icut_sel = 0, icut_track = 0, icut_tof = 0, icut_trig = 0, icut_l1 = 0;
-		std::vector<std::string> labels_Sel;
-					labels_Sel = {"Total",
-				              "Trigger",
-				              "BetaInRange",
-				              "UTofChargeInRange",
-				              "TofGoodPath",
-				              "InnerHitPattern",
-				              "NGoodCl",
-				              "InnerChReso<0.55",
-				              "InnerChInRange",
-				              "Inner #chi^{2}_{Y}",
-				              "InnerL1 #chi^{2}_{Y}",
-				              "L1HitCut",
-				              "L1Charge In Range",
-				              "L1NormRes"};			
-			auto ncuts_Sel = labels_Sel.size();
-			auto counters_Sel = new TH1D("counters_Sel", "", ncuts_Sel, -0.5, ncuts_Sel - 0.5);
-			auto fill_counters_Sel = [&counters_Sel, &icut_sel, &labels_Sel](Event &event) {
-				 counters_Sel->GetXaxis()->SetBinLabel(icut_sel + 1, labels_Sel.at(icut_sel).c_str());
-				 counters_Sel->Fill(icut_sel);
-				 icut_sel++;
-			};		
-		std::vector<std::string> labels_trackEff;
-					labels_trackEff = {"Total",
-							              "Trigger",
-							              "TofSt_Beta",
-							              "L1 UnbHit",
-							              "L1 UnbCharge",
-							              "InsideINN",
-							              "InsideL1"
-							              "InnFidV",
-							              "L1FidV",
-							              "Tof #chi^{2} time",
-							              "Tof #chi^{2} coo",
-							              "Upper TofSt Charge",
-							              "Lower TofSt Charge",
-							              "Tot TofSt Charge"};
-			auto ncuts_trackEff = labels_trackEff.size();
-			auto counters_trackEff = new TH1D("counters_trackEff", "", ncuts_trackEff, -0.5, ncuts_trackEff - 0.5);
-			auto fill_counters_trackEff = [&counters_trackEff, &icut_track, &labels_trackEff](Event &event) {
-				 counters_trackEff->GetXaxis()->SetBinLabel(icut_track + 1, labels_trackEff.at(icut_track).c_str());
-				 counters_trackEff->Fill(icut_track);
-				 icut_track++;
-			};		
-		std::vector<std::string> labels_tofEff;
-					labels_tofEff = {"Total",
-										  "Trigger",
-							              "InnerHitPattern",
-							              "InnerNHits>4",
-							              "NGoodCl",
-							              "InnerChInRange",
-							              "Inner #chi^{2}_{Y}",
-							              "InnerL1 #chi^{2}_{Y}",
-							              "L1HitCut",
-							              "IsInL1",
-							              "GoodSecTrack",
-							              "L1 Charge In Range",
-							              "Inner Charge Resolution <0.55",
-							              "L1NormRes"};
-				
-			auto ncuts_tofEff = labels_tofEff.size();
-			auto counters_tofEff = new TH1D("counters_tofEff", "", ncuts_tofEff, -0.5, ncuts_tofEff - 0.5);
-			auto fill_counters_tofEff = [&counters_tofEff, &icut_tof, &labels_tofEff](Event &event) {
-				 counters_tofEff->GetXaxis()->SetBinLabel(icut_tof + 1, labels_tofEff.at(icut_tof).c_str());
-				 counters_tofEff->Fill(icut_tof);
-				 icut_tof++;
-			};		
-		std::vector<std::string> labels_trigEff;
-					labels_trigEff = {"Total",
-										  "TofGoodPath",
-							              "Beta",
-							              "Upper Tof Charge",
-							              "Inner Charge Pattern",
-							              "NGoodCl>2",
-							              "Inner Charge In Range",
-							              "Inner #chi^{2}_{Y}",
-							              "InnerL1 #chi^{2}_{Y}",
-							              "L1 Hit",
-							              "L1NormRes",
-							              "L1 Charge In Range",
-							              "Inner Charge Resolution <0.55",
-							              "IsInsideL1"};				
-			auto ncuts_trigEff = labels_trigEff.size();
-			auto counters_trigEff = new TH1D("counters_trigEff", "", ncuts_trigEff, -0.5, ncuts_trigEff - 0.5);
-			auto fill_counters_trigEff = [&counters_trigEff, &icut_trig, &labels_trigEff](Event &event) {
-				 counters_trigEff->GetXaxis()->SetBinLabel(icut_trig + 1, labels_trigEff.at(icut_trig).c_str());
-				 counters_trigEff->Fill(icut_trig);
-				 icut_trig++;
-			};		
-		std::vector<std::string> labels_l1Eff;
-					labels_l1Eff = {"Total",
-							              "Trigger",
-							              "TofGoodPath",
-							              "Beta",
-							              "Upper Tof Charge",
-							              "Inner Charge Pattern",
-							              "Inner Track NHits>4",
-							              "NGoodCl",
-							              "Inner Charge In Range",
-							              "Inner #chi^{2}_{Y}",
-							              "L1Fid",
-							              "InnerFid",
-							              "IsInL1",
-							              "GoodTRDHits",
-							              "InnerChRMS <0.55"};				
-			auto ncuts_l1Eff = labels_l1Eff.size();
-			auto counters_l1Eff = new TH1D("counters_l1Eff", "", ncuts_l1Eff, -0.5, ncuts_l1Eff - 0.5);
-			auto fill_counters_l1Eff = [&counters_l1Eff, &icut_l1, &labels_l1Eff](Event &event) {
-				 counters_l1Eff->GetXaxis()->SetBinLabel(icut_l1 + 1, labels_l1Eff.at(icut_l1).c_str());
-				 counters_l1Eff->Fill(icut_l1);
-				 icut_l1++;
-			};*/
+		
 auto mysel =
 	ns::Trigger::HasPhysicsTrigger() && //OK
 	ns::Tof::BetaInRange(0.0,inf,BTH) && //OK
-	ns::Tof::ChargeInRange(static_cast<float>(charge)-0.75,static_cast<float>(charge)+0.75,UTC) && //OK
+	ns::PG::Tof::ChargeInRange(static_cast<float>(charge),UTC) && //OK
     (ns::Tof::GoodPathlength(0b0001) ||ns::Tof::GoodPathlength(0b0010) ) && //OK
     ns::InnerTracker::HitPattern() && //OK
     ns::InnerTracker::NGoodClustersGreaterThan(2, 0x10013D) && //OK
     ns::InnerTracker::ChargeRMSLessThan(0.55, CRT) && //OK
-    ns::InnerTracker::ChargeInRange(static_cast<float>(charge)-0.3,static_cast<float>(charge)+0.7,CRT) && //OK
+    ns::PG::InnerTracker::ChargeInRange(static_cast<float>(charge),CRT) && //OK
     ns::Track::ChiSquareLessThan(10.0, YSD, FIT, IL1) && //OK
     ns::Track::ChiSquareLessThan(10.0, YSD, FIT, INN) && //OK
     ns::Track::HitCut(1) && //OK
-	ns::TrackerLayer::ChargeInRange(1,0,static_cast<float>(charge)+0.8,CRT) && //OK
+	ns::PG::TrackerLayer::ChargeInRange(1,static_cast<float>(charge),CRT) && //OK
 	InnerTracker::L1NormResidualLessThan(10.0,FIT); //OK
-auto belowL1 =
-	ns::Trigger::HasPhysicsTrigger() && //OK
-	ns::Tof::BetaInRange(0.0,inf,BTH) && //OK
-	ns::Tof::ChargeInRange(static_cast<float>(charge)-0.75,static_cast<float>(charge)+0.75,UTC) && //OK
-    (ns::Tof::GoodPathlength(0b0001) ||ns::Tof::GoodPathlength(0b0010) ) && //OK
-    ns::InnerTracker::HitPattern() && //OK
-    ns::InnerTracker::NGoodClustersGreaterThan(2, 0x10013D) && //OK
-    ns::InnerTracker::ChargeRMSLessThan(0.55, CRT) && //OK
-    ns::InnerTracker::ChargeInRange(static_cast<float>(charge)-0.3,static_cast<float>(charge)+0.7,CRT) && //OK
-    ns::Track::ChiSquareLessThan(10.0, YSD, FIT, IL1) && //OK
-    ns::Track::ChiSquareLessThan(10.0, YSD, FIT, INN) && //OK
-    ns::Track::HitCut(1) && //OK
-	InnerTracker::L1NormResidualLessThan(10.0,FIT); //OK
-/*auto num_tof =
-	ns::Tof::BetaInRange(0.0,inf,BTH) && //OK
-	ns::Tof::ChargeInRange(static_cast<float>(charge)-0.75,static_cast<float>(charge)+0.75,UTC) && //OK
-	(ns::Tof::GoodPathlength(0b0001) || ns::Tof::GoodPathlength(0b0010)); //OK
-auto den_tof = 
-	ns::Trigger::HasPhysicsTrigger() && //OK
-	ns::InnerTracker::HitPattern() &&  //OK
-	ns::InnerTracker::ChargeInRange(static_cast<float>(charge)-0.3,static_cast<float>(charge)+0.7,CRT) && //OK
-	ns::InnerTracker::NGoodClustersGreaterThan(2, 0x10013D) && //OK
-	ns::Track::ChiSquareLessThan(10.0, YSD, FIT, IL1) && //OK
-	ns::Track::ChiSquareLessThan(10.0, YSD, FIT, INN) && //OK
-	ns::Track::HitCut(1) && //OK
-	MySel::IsInsideL1(FIT, INN, 0) && //OK
-	MySel::HasGoodSecondTrTrack(FIT, INN, 0.2) && //OK
-	ns::TrackerLayer::ChargeInRange(1,0,static_cast<float>(charge)+0.8,CRT) && //OK
-	ns::InnerTracker::ChargeRMSLessThan(0.55, CRT) && //OK
-	InnerTracker::L1NormResidualLessThan(10.0,FIT); //OK	
-auto num_l1 =
-	ns::TrackerLayer::ChargeInRange(1,0,static_cast<float>(charge)+0.8,CRT) && 
-	ns::Track::ChiSquareLessThan(10.0, YSD, FIT, IL1) && 
-    ns::Track::L1FiducialVolume(FIT, IL1) && 
-    ns::Track::HitCut(1) && 
-    InnerTracker::L1NormResidualLessThan(10.0,FIT); 
-auto den_l1 = 
-	ns::Trigger::HasPhysicsTrigger() && 
-	ns::Tof::GoodPathlength(0b0011) && 
-	ns::Tof::BetaInRange(0.0,inf,BTH) && 
-	ns::Tof::ChargeInRange(static_cast<float>(charge)-0.2,static_cast<float>(charge)+0.2,UTC) && 
-	ns::InnerTracker::HitPattern() && 
-	ns::InnerTracker::NHitsGreaterThan(4, YSD) &&
-	ns::InnerTracker::NGoodClustersGreaterThan(2, 0x10013D) &&
-	ns::InnerTracker::ChargeInRange(static_cast<float>(charge)-0.2,static_cast<float>(charge)+0.2,CRT) && 
-	ns::Track::ChiSquareLessThan(10.0f, YSD, FIT, INN) && 
-	ns::Track::L1FiducialVolume(FIT, INN) && 
-	ns::Track::InnerFiducialVolume(FIT, INN) && 
-	MySel::IsInsideL1(FIT, INN, 0) && 
-	trd::HasGoodTRDHits(charge) &&
-	ns::InnerTracker::ChargeRMSLessThan(0.55, CRT); 
-auto num_track =
-	ns::InnerTracker::HitPattern() && //OK
-	ns::InnerTracker::NGoodClustersGreaterThan(2, 0x10013D) && //OK
-	ns::InnerTracker::ChargeRMSLessThan(0.55, CRT) && //OK
-    ns::InnerTracker::ChargeInRange(static_cast<float>(charge)-0.3f,static_cast<float>(charge)+0.7,CRT) && //OK
-    ns::Track::ChiSquareLessThan(10.0f, YSD, FIT, INN); //OK
-auto den_track =
-	ns::Trigger::HasPhysicsTrigger() && //OK
-	TofSt::tofBetaInRange(0.4,inf,BTH) && //OK
-	track::UnbExtHitChargeStatus(EL1) && //OK
-	track::UnbExtHitChargeInRange(EL1,static_cast<float>(charge),CRT,"") && //OK
-	track::IsInsideInner(4.5) && //OK
-	track::IsInsideL1(1) && //OK
-	track::InnerFiducialVolume() &&
-	track::L1FiducialVolume() &&
-	TofSt::tofChi2TimeLessThan(2) && //OK
-	TofSt::tofChi2CooLessThan(2) && //OK
-	ns::Tof::ChargeInRange(static_cast<float>(charge)-0.3,static_cast<float>(charge)+0.3, UTC) && //OK
-	ns::Tof::ChargeInRange(static_cast<float>(charge)-0.3,static_cast<float>(charge)+0.3, LTC) && //OK
-	ns::Tof::ChargeInRange(static_cast<float>(charge)-0.3,static_cast<float>(charge)+0.3, TOT); //OK
-auto den_trig =
-	ns::Tof::GoodPathlength(0b0011) && //OK
-	ns::Tof::BetaInRange(0.0,inf,BTH) && //OK
-	ns::Tof::ChargeInRange(static_cast<float>(charge)-0.75,static_cast<float>(charge)+0.75,UTC) && //OK
-    ns::InnerTracker::HitPattern() && //OK
-	ns::InnerTracker::NGoodClustersGreaterThan(2, 0x10013D) && //OK
-    ns::InnerTracker::ChargeInRange(static_cast<float>(charge)-0.3,static_cast<float>(charge)+0.7,CRT) && //OK
-    ns::Track::ChiSquareLessThan(10.0, YSD, FIT, IL1) && //OK
-    ns::Track::ChiSquareLessThan(10.0, YSD, FIT, INN) && //OK
-    ns::Track::HitCut(1) && //OK
-    InnerTracker::L1NormResidualLessThan(10.0,FIT) && //OK
-	ns::TrackerLayer::ChargeInRange(1,0,static_cast<float>(charge)+0.8,CRT) && //OKok
-	ns::InnerTracker::ChargeRMSLessThan(0.55, CRT) && //OK
-	trig::IsInsideL1(FIT,IL1,0); //OK*/
+auto l1temp =
+    BuildTemplatesSel::HitPattern() &&
+	BuildTemplatesSel::TofChargeInRange(static_cast<float>(charge), UTC) &&       
+	BuildTemplatesSel::TofChargeInRange(static_cast<float>(charge), LTC) &&
+	ns::TrackerLayer::ChargeStatus(1) &&
+    BuildTemplatesSel::InnerTrackerChargeInRange(static_cast<float>(charge), CRT) &&
+    BuildTemplatesSel::InnerTrackerChargeRMSLessThan(0.07, CRT);
+	if (charge < 9)
+    l1temp &= BuildTemplatesSel::InnerTrackerNtrackLessThan(3) &&
+  	BuildTemplatesSel::HasGoodSecondTrTrack(FIT,INN, 0.2);
+  	//BuildTemplatesSel::HasGoodTRDHits(charge);
+auto l2temp = 
+    BuildTemplatesSel::HitPattern() &&
+    BuildTemplatesSel::TofChargeInRange(static_cast<float>(charge),UTC) &&
+    BuildTemplatesSel::TofChargeInRange(static_cast<float>(charge),LTC) &&
+    BuildTemplatesSel::InnerTrackerChargeInRange(static_cast<float>(charge), CRT) &&
+    BuildTemplatesSel::InnerTrackerChargeRMSLessThan(0.07, CRT) && ns::TrackerLayer::ChargeStatus(1) &&
+    BuildTemplatesSel::TrackerLayerChargeInRange(1, static_cast<float>(charge), CRT) && ns::TrackerLayer::ChargeStatus(2);
+	if (charge < 9)
+    l2temp &= BuildTemplatesSel::InnerTrackerNtrackLessThan(3) &&
+	BuildTemplatesSel::HasGoodSecondTrTrack(FIT,INN, 0.2);
+
+
 
 /////////////////// LOOP ///////////////////////////////
 		for(Event& event : chain) {
@@ -319,6 +171,7 @@ auto den_trig =
 			} else {
 				gen = event.mcTruthBase->Primary.GetGenMomentum()/event.mcTruthBase->Primary.Z;
 				allRigL1->Fill(event.trTrackBase->Rigidity[FIT][IL1]);
+				genRig->Fill(gen);
 			}	
 			////MY SELECTION////
 			if (where.Contains("AboveL1") ) {
@@ -336,99 +189,38 @@ auto den_trig =
 			}
 
 			if (where.Contains("BelowL1") ) {
-			if (belowL1(event)) {
-				if (!isMC) {
-					l1charge = event.trTrackBase->LayerChargeXY[0][CRT];
-					L1charge->Fill(l1charge);
+				if (l1temp(event)) {
+					auto Rigidity_IL1 = event.trTrackBase->Rigidity[FIT][IL1];
+					int bin = rigBinTemplate->FindBin(Rigidity_IL1);
+					if (bin < 1 || bin > rigBinTemplate->GetNbinsX())
+						continue;
+					auto L1charge = event.trTrackBase->LayerChargeXY[0][CRT];
+					static_cast<TH1D *>(l1TemplateList->At(bin - 1))->Fill(L1charge);
+				}
+				if (l2temp(event)) {
+					auto Rigidity_IL1 = event.trTrackBase->Rigidity[FIT][IL1];
+					int bin = rigBinTemplate->FindBin(Rigidity_IL1);
+					if (bin < 1 || bin > rigBinTemplate->GetNbinsX())
+						continue;
+					auto L2charge = event.trTrackBase->LayerChargeXY[1][CRT];
+				    static_cast<TH1D *>(l2TemplateList->At(bin - 1))->Fill(L2charge);
 				}
 			}
-			}
-			////TOF EFF////
-      		/*if(den_tof(event)) {
-      			reco_il1 = event.trTrackBase->Rigidity[FIT][IL1];
-      		    int rbin = hist_rig->FindBin(reco_il1);
-      		    double rlowedge = hist_rig->GetBinLowEdge(rbin);
-      		    if (!isMC) {
-      		    	if(rlowedge > 1.2*cutoff) { 
-      					sample_tof->Fill(utime, reco_il1);
-      		        	if(num_tof(event)) pass_tof->Fill(utime, reco_il1);
-      		    	}
-      		    } else {
-      		    	sample_tof->Fill(utime, reco_il1);
-      		    	if (num_tof(event) ) pass_tof->Fill(utime, reco_il1);
-      		    }
-      		}
-			////L1 EFF/////
-      		if(den_l1(event)) {
-      			reco_inn = event.trTrackBase->Rigidity[FIT][INN];
-      		    int rbin = hist_rig->FindBin(reco_inn);
-      		    double rlowedge = hist_rig->GetBinLowEdge(rbin);
-      		    if (!isMC) {
-      		    	if(rlowedge > 1.2*cutoff) {
-      					sample_l1->Fill(utime, reco_inn);
-      		        	if(num_l1(event)) pass_l1->Fill(utime, reco_inn);
-      		   	 	}
-      		   	} else {
-      		   		sample_l1->Fill(utime, reco_inn);
-      		   		if (num_l1(event)) pass_l1->Fill(utime, reco_inn);
-      		   	}
-      		}
-
-			////TRACK EFF////
-      		if(den_track(event)) {
-      			FillHistos(*sample_tr,charge,Amass,weight,chain,event);
-      			if(num_track(event)) FillHistos(*pass_tr,charge,Amass,weight,chain,event);
-      		}
-			////TRIGGER EFF/////
-      		if(den_trig(event)) {
-      			reco_il1 = event.trTrackBase->Rigidity[FIT][IL1];
-      			int rbin = hist_rig->FindBin(reco_il1);
-        		double rlowedge = hist_rig->GetBinLowEdge(rbin);
-        		if (!isMC) {
-        			event.evSummary->RestorePhysBPatt(true);
-        			double weight = event.evSummary->TriggerWeight();	
-        		}
-        		if (!isMC) { 
-        			if(rlowedge > 1.2*cutoff) {
-	      				if (physics(event)) {
-	      					sample_trig->Fill(utime, reco_il1, weight);	
-	      					phys_trig->Fill(utime, reco_il1, weight);
-	      				}
-                  		if (unbiased(event)) {
-                  			sample_trig->Fill(utime, reco_il1, weight);
-                  			unbiased_trig->Fill(utime, reco_il1);
-          				}
-          			}
-          		} else {
-          			if (physics(event)) {
-          				sample_trig->Fill(utime, reco_il1, weight);
-          				phys_trig->Fill(utime, reco_il1, weight);
-          			}
-          			if (unbiased(event)) {
-          				unbiased_trig->Fill(utime,reco_il1,weight);
-          				sample_trig->Fill(utime, reco_il1, weight);
-          			}
-          		}
-     		}*/
       		if (isMC) tree->Fill();	
 		} //event loop	
 	//WRITE//
 	auto outfile = new TFile(out, "recreate");
-	/*outfile->WriteTObject(counters_Sel, "counters_Sel");
-	outfile->WriteTObject(counters_tofEff, "counters_tofEff");
-	outfile->WriteTObject(counters_trigEff, "counters_trigEff");
-	outfile->WriteTObject(counters_l1Eff, "counters_l1Eff");
-	outfile->WriteTObject(counters_trackEff, "counters_trackEff");*/
 	outfile->WriteTObject(rigidity, "rigidity");
 	outfile->WriteTObject(lvt_25, "lvt_25");
 	outfile->WriteTObject(L1charge, "L1charge");
+	outfile->WriteTObject(l1TemplateList, Form("L1TemplateList_%i", charge), "Overwrite");
+	outfile->WriteTObject(l2TemplateList, Form("L2TemplateList_%i", charge), "Overwrite");
 	if (isMC) {
-	    //outfile->WriteTObject(tree, "reco_gen");
 	    outfile->WriteTObject(mc_samp, "mc_samp");
 	    outfile->WriteTObject(mc_pass_gen, "mc_pass_gen");
 	    outfile->WriteTObject(mc_pass, "mc_pass");
 	    outfile->WriteTObject(allRigL1, "allRigL1");
-	    //outfile->WriteTObject(corr_mc_pass, "corr_mc_pass");
+	    outfile->WriteTObject(genRig, "genRig");
 	}
 	outfile->Close();
 	} //valid input
