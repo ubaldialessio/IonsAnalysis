@@ -30,6 +30,7 @@ set(SOURCES_fragment
     include/Efficiencies/TRD.cpp
     include/Efficiencies/RTI.cpp
     include/Efficiencies/MySel.cpp
+    include/Templates/BuildTemplatesSel.cpp
 )
 
 add_executable(selectEv ${SOURCES_selectEv})
@@ -51,3 +52,8 @@ add_executable(fragmentation ${SOURCES_fragment})
 target_link_libraries(fragmentation NAIA::NAIAChain NSL::NSLSelections)
 target_include_directories(fragmentation PRIVATE include/)
 set_target_properties(fragmentation PROPERTIES RUNTIME_OUTPUT_DIRECTORY ./../bin/)
+
+add_executable(CreateTemplatesBelowL1 src/CreateTemplatesBelowL1.cpp)
+target_link_libraries(CreateTemplatesBelowL1 NAIA::NAIAChain NSL::NSLSelections)
+target_include_directories(CreateTemplatesBelowL1 PRIVATE include/)
+set_target_properties(CreateTemplatesBelowL1 PROPERTIES RUNTIME_OUTPUT_DIRECTORY ./../bin/)

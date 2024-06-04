@@ -7,11 +7,24 @@ git clone --branch v1.0.1 ssh://git@gitlab.cern.ch:7999/ams-italy/nsl.git and th
 To set the configuration for cmake, inside build do:
 cmake .. -DNAIA_DIR=/cvmfs/ams.cern.ch/Offline/amsitaly/public/install/x86_64-centos7-gcc9.3/naia/v1.0.2/cmake -DNSL_DIR=/storage/gpfs_ams/ams/users/aubaldi/nsl.install/cmake
 
+## selectEv
+Is the executable involved in the selection of the given nuclei (charge). It computes the selection, the efficiencies, the mc acceptance, the livetime and the counts. Also produces the hooks histograms with the given selection.
 
-- - - In the getData directory there is all the stuff involved on taking data from pass8. The logical order is the following:
-	  - the script find_and_sort.sh take all the n-tuples (in this case from v.1.0.0) and split them in 100 .txt files. The script saves them on the 'ntuples' dir along with the file 'data_filelist.txt' ready to be submitted to condor;
-- - - The Data directory contains the outputs from the executables: the logic is Data/<name_of_executable>/ and here there is:
-	  - condor (with all the stuff and the submission code);
-	  - actually ouptut;
-- - - checkVar is involved in plotting all the variables (charge, beta , rigidity etc..) to justify the paramters used in the selection (cuts);
-- - - In the data_test/ dir there are some test.
+## eff
+Evaluate the total acceptance (data/mc corrections) and compute the actual flux.
+
+## hplot
+Usage: 
+./hplot <charge> <single/same>
+Produce a pdf file with the four efficiencies for a given nuclei (charge). With the option "single" it produces 1 efficiency per pages, with "both" overlaps (SAME) data and mc efficiencies.
+
+## fragmentation
+Usage: 
+./fragmentation <charge> <path/to/input.root> <output.root> <AboveL1/BelowL1> 
+Is involved in the production of the purity for a given nuclei. Actually only BelowL1 is implemented.
+
+## CreateTemplatesBelowL1
+Usage: ./CreateTemplatesBelowL1 <charge>
+Once fragmentation has run over all the ntuples, this executable produce 3 files: one .root and two .pwd. The .root file contains two histogram that are the L1 charge distribution (to be fitted) and the L2 templates. The two pdf files are:
+a) a pdf file containg the distribution of L1 and L2 for every rigity bin (22 in total), one bin per page);
+b) a pdf file containg the summed of the distribution in every rigidity bin for both L1 and L2 dranw overlapped.
