@@ -25,6 +25,10 @@ Is involved in the production of the purity for a given nuclei. Actually only Be
 
 ## CreateTemplatesBelowL1
 Usage: ./CreateTemplatesBelowL1 <charge>
-Once fragmentation has run over all the ntuples, this executable produce 3 files: one .root and two .pwd. The .root file contains two histogram that are the L1 charge distribution (to be fitted) and the L2 templates. The two pdf files are:
+Once fragmentation has run over all the ntuples, this executable produce 3 files: one .root and two .pdf. The .root file contains two histogram that are the L1 charge distribution (to be fitted) and the L2 templates. The two pdf files are:
 a) a pdf file containg the distribution of L1 and L2 for every rigity bin (22 in total), one bin per page);
-b) a pdf file containg the summed of the distribution in every rigidity bin for both L1 and L2 dranw overlapped.
+b) a pdf file containg the summed of the distribution in every rigidity bin for both L1 and L2 drawn overlapped.
+
+## CompareEff
+Usage: ./CompareEff <charge1> <charge2> ... <charge n>
+Create a pdf file comparing the efficiencies for the given nuclei (charges). For example by submitting ./CompareEff 5 6 8 it will produce some nice plots with the efficiencies for both data and mc

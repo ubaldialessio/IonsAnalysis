@@ -2,7 +2,7 @@
 #include "binning.h"
 #include "utils.h"
 
-void FillHistos(TH2D &histo, unsigned int charge, double Amass, double weight, NAIA::NAIAChain &chain, NAIA::Event &event);
+double FillHistos(TH2D &histo, unsigned int charge, double Amass, double weight, NAIA::NAIAChain &chain, NAIA::Event &event);
 double GetDataMass(unsigned int charge);
 
 int main(int argc, char *argv[]) {
@@ -50,13 +50,13 @@ int main(int argc, char *argv[]) {
 	//process
 	if (validInput) {
 		NAIA::NAIAChain chain;
-		if(infilename.Contains(".root") && filesystem::exists(infilename.Data()) ){
+		if(infilename.Contains(".root") /* && filesystem::exists(infilename.Data())*/ ){
 		    chain.Add(infilename.Data());
-		}else if (infilename.Contains(".txt") && filesystem::exists(infilename.Data()) ){
+		}else if (infilename.Contains(".txt") /* && filesystem::exists(infilename.Data())*/ ){
 		    ifstream infilelist(infilename.Data());
 		    TString bufname;
 		    while(infilelist >> bufname) 
-		      if(bufname.Contains(".root") && filesystem::exists(bufname.Data()))
+		      if(bufname.Contains(".root" /* && filesystem::exists(bufname.Data()) */))
 		        chain.Add(bufname.Data());
 		}
 		chain.SetupBranches();
@@ -64,7 +64,8 @@ int main(int argc, char *argv[]) {
 		if (isMC) out="/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/IonsSelected/"+ionPath+"/mc/"+outname;
 		else out="/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/IonsSelected/"+ionPath+"/dat/"+outname;
 		unsigned int utime, oldtime;
-		float reco_il1, reco_inn, beta, lt;
+		short passed;
+		float reco_il1, reco_inn, beta, lt, reco_beta;
 		double gen, cutoff;
 		double Amass = 1;
 		double weight = 1;
@@ -73,10 +74,10 @@ int main(int argc, char *argv[]) {
 		    tree->Branch("utime", &utime);
 		    tree->Branch("reco_inn", &reco_inn);
 		    tree->Branch("reco_il1", &reco_il1);
-		    //tree->Branch("reco_beta", &reco_beta);
+		    tree->Branch("reco_beta", &reco_beta);
 		    tree->Branch("gen", &gen);
 		    tree->Branch("beta", &beta);
-		    //tree->Branch("passed", &passed);
+		    tree->Branch("passed", &passed);
 		    ///////////////////////////////////////
 		    auto mcchain = chain.GetFileInfoTree();
 		    auto mcinfo = new NAIA::MCFileInfo();
@@ -144,9 +145,8 @@ int main(int argc, char *argv[]) {
 					labels_tofEff = {"Total",
 										  "Trigger",
 							              "InnerHitPattern",
-							              "InnerNHits>4",
-							              "NGoodCl",
 							              "InnerChInRange",
+							              "NGooCl",
 							              "Inner #chi^{2}_{Y}",
 							              "InnerL1 #chi^{2}_{Y}",
 							              "L1HitCut",
@@ -155,7 +155,6 @@ int main(int argc, char *argv[]) {
 							              "L1 Charge In Range",
 							              "Inner Charge Resolution <0.55",
 							              "L1NormRes"};
-				
 			auto ncuts_tofEff = labels_tofEff.size();
 			auto counters_tofEff = new TH1D("counters_tofEff", "", ncuts_tofEff, -0.5, ncuts_tofEff - 0.5);
 			auto fill_counters_tofEff = [&counters_tofEff, &icut_tof, &labels_tofEff](Event &event) {
@@ -211,16 +210,16 @@ int main(int argc, char *argv[]) {
 auto mysel =
 	ns::Trigger::HasPhysicsTrigger().AddPostHook(fill_counters_Sel) && //OK
 	ns::Tof::BetaInRange(0.0,inf,BTH).AddPostHook(fill_counters_Sel) && //OK
-	ns::Tof::ChargeInRange(static_cast<float>(charge)-0.75,static_cast<float>(charge)+0.75,UTC).AddPostHook(fill_counters_Sel) && //OK
+	ns::PG::Tof::ChargeInRange(static_cast<float>(charge),UTC).AddPostHook(fill_counters_Sel) && //OK
     (ns::Tof::GoodPathlength(0b0001) ||ns::Tof::GoodPathlength(0b0010) ).AddPostHook(fill_counters_Sel) && //OK
     ns::InnerTracker::HitPattern().AddPostHook(fill_counters_Sel) && //OK
     ns::InnerTracker::NGoodClustersGreaterThan(2, 0x10013D).AddPostHook(fill_counters_Sel) && //OK
     ns::InnerTracker::ChargeRMSLessThan(0.55, CRT).AddPostHook(fill_counters_Sel) && //OK
-    ns::InnerTracker::ChargeInRange(static_cast<float>(charge)-0.3,static_cast<float>(charge)+0.7,CRT).AddPostHook(fill_counters_Sel) && //OK
+    ns::PG::InnerTracker::ChargeInRange(static_cast<float>(charge),CRT).AddPostHook(fill_counters_Sel) && //OK
     ns::Track::ChiSquareLessThan(10.0, YSD, FIT, IL1).AddPostHook(fill_counters_Sel) && //OK
     ns::Track::ChiSquareLessThan(10.0, YSD, FIT, INN).AddPostHook(fill_counters_Sel) && //OK
     ns::Track::HitCut(1).AddPostHook(fill_counters_Sel) && //OK
-	ns::TrackerLayer::ChargeInRange(1,0,static_cast<float>(charge)+0.8,CRT).AddPostHook(fill_counters_Sel) && //OK
+	ns::PG::TrackerLayer::ChargeInRange(1,static_cast<float>(charge),CRT).AddPostHook(fill_counters_Sel) && //OK
 	InnerTracker::L1NormResidualLessThan(10.0,FIT).AddPostHook(fill_counters_Sel); //OK
 auto num_tof =
 	ns::Tof::BetaInRange(0.0,inf,BTH) && //OK
@@ -324,6 +323,7 @@ auto den_trig =
 			    }
 			} else {
 				gen = event.mcTruthBase->Primary.GetGenMomentum()/event.mcTruthBase->Primary.Z;
+				passed = 0;
 			}	
 			////MY SELECTION////
 			if (mysel(event)) {
@@ -335,6 +335,7 @@ auto den_trig =
 				} else {
 					mc_pass->Fill(reco_il1);
 					mc_pass_gen->Fill(gen);
+					passed |= 1<<8;
 				}
 			}
 			////TOF EFF////
@@ -349,7 +350,11 @@ auto den_trig =
       		    	}
       		    } else {
       		    	sample_tof->Fill(utime, reco_il1);
-      		    	if (num_tof(event) ) pass_tof->Fill(utime, reco_il1);
+					passed |= 1<<2;
+      		    	if (num_tof(event) ) {
+						pass_tof->Fill(utime, reco_il1);
+						passed |= 1<<3;
+					}
       		    }
       		}
 			////L1 EFF/////
@@ -364,14 +369,22 @@ auto den_trig =
       		   	 	}
       		   	} else {
       		   		sample_l1->Fill(utime, reco_inn);
-      		   		if (num_l1(event)) pass_l1->Fill(utime, reco_inn);
+					passed |= 1;
+      		   		if (num_l1(event)) { 
+						pass_l1->Fill(utime, reco_inn); 
+						passed |= 1<<1;
+					}
       		   	}
       		}
 
 			////TRACK EFF////
       		if(den_track(event)) {
-      			FillHistos(*sample_tr,charge,Amass,weight,chain,event);
-      			if(num_track(event)) FillHistos(*pass_tr,charge,Amass,weight,chain,event);
+				passed |= 1<<6;
+      			reco_beta = FillHistos(*sample_tr,charge,Amass,weight,chain,event);
+      			if(num_track(event)) {
+					reco_beta = FillHistos(*pass_tr,charge,Amass,weight,chain,event);
+					passed |= 1<<7;
+				}
       		}
 			////TRIGGER EFF/////
       		if(den_trig(event)) {
@@ -394,9 +407,11 @@ auto den_trig =
           				}
           			}
           		} else {
+					passed |= 1<<4;
           			if (physics(event)) {
           				sample_trig->Fill(utime, reco_il1, weight);
           				phys_trig->Fill(utime, reco_il1, weight);
+						passed |= 1<<5;
           			}
           			if (unbiased(event)) {
           				unbiased_trig->Fill(utime,reco_il1,weight);
@@ -404,7 +419,7 @@ auto den_trig =
           			}
           		}
      		}
-      		if (isMC) tree->Fill();	
+      		if (isMC && passed != 0)  tree->Fill();	
 		} //event loop	
 	//WRITE//
 	auto outfile = new TFile(out, "recreate");
@@ -425,7 +440,7 @@ auto den_trig =
 	outfile->WriteTObject(phys_trig, "phys_trig");
 	outfile->WriteTObject(unbiased_trig, "unbiased_trig");
 	if (isMC) {
-	    //outfile->WriteTObject(tree, "reco_gen");
+	    outfile->WriteTObject(tree, "reco_gen");
 	    outfile->WriteTObject(mc_samp, "mc_samp");
 	    outfile->WriteTObject(mc_pass_gen, "mc_pass_gen");
 	    outfile->WriteTObject(mc_pass, "mc_pass");
@@ -437,7 +452,7 @@ auto den_trig =
 
 
 //FUNCTION DEFINITION
-void FillHistos(TH2D &histo, unsigned int charge, double Amass, double weight, NAIA::NAIAChain &chain,  NAIA::Event &event) {
+double FillHistos(TH2D &histo, unsigned int charge, double Amass, double weight, NAIA::NAIAChain &chain,  NAIA::Event &event) {
   bool IsMC = chain.IsMC();
   float IGRFCutoff;
   if (!IsMC) {
@@ -457,11 +472,15 @@ void FillHistos(TH2D &histo, unsigned int charge, double Amass, double weight, N
   }
   if (BetaRig <= 5) {
     histo.Fill(utime, BetaRig, weight);
+	return BetaRig;
   } else if (IGRFCutoff > 5 && IGRFCutoff <= 30) {
     histo.Fill(utime, IGRFCutoff, weight);
+	return IGRFCutoff;
   } else if (EnergyD > 30 && Efficiency::TrTrackEffSel::IsInsideEcal()(event)) {
     histo.Fill(utime, EnergyD, weight);
+	return EnergyD;
   }
+  return EnergyD;
 }
 
 double GetDataMass(unsigned int charge) {
@@ -499,6 +518,9 @@ double GetDataMass(unsigned int charge) {
   case 14:
     A = 28;
     break;
+  case 15;
+    A = 31;
+	break;
   case 16:
     A = 32;
     break;

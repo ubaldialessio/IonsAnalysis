@@ -89,19 +89,124 @@ CMakeFiles/selectEv.dir/src/selectEv.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/selectEv.dir/src/selectEv.cpp.s"
 	/cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/src/selectEv.cpp -o CMakeFiles/selectEv.dir/src/selectEv.cpp.s
 
+CMakeFiles/selectEv.dir/include/Efficiencies/Tracker.cpp.o: CMakeFiles/selectEv.dir/flags.make
+CMakeFiles/selectEv.dir/include/Efficiencies/Tracker.cpp.o: ../include/Efficiencies/Tracker.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/selectEv.dir/include/Efficiencies/Tracker.cpp.o"
+	/cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/selectEv.dir/include/Efficiencies/Tracker.cpp.o -c /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/include/Efficiencies/Tracker.cpp
+
+CMakeFiles/selectEv.dir/include/Efficiencies/Tracker.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/selectEv.dir/include/Efficiencies/Tracker.cpp.i"
+	/cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/include/Efficiencies/Tracker.cpp > CMakeFiles/selectEv.dir/include/Efficiencies/Tracker.cpp.i
+
+CMakeFiles/selectEv.dir/include/Efficiencies/Tracker.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/selectEv.dir/include/Efficiencies/Tracker.cpp.s"
+	/cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/include/Efficiencies/Tracker.cpp -o CMakeFiles/selectEv.dir/include/Efficiencies/Tracker.cpp.s
+
+CMakeFiles/selectEv.dir/include/Efficiencies/Trigger.cpp.o: CMakeFiles/selectEv.dir/flags.make
+CMakeFiles/selectEv.dir/include/Efficiencies/Trigger.cpp.o: ../include/Efficiencies/Trigger.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/selectEv.dir/include/Efficiencies/Trigger.cpp.o"
+	/cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/selectEv.dir/include/Efficiencies/Trigger.cpp.o -c /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/include/Efficiencies/Trigger.cpp
+
+CMakeFiles/selectEv.dir/include/Efficiencies/Trigger.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/selectEv.dir/include/Efficiencies/Trigger.cpp.i"
+	/cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/include/Efficiencies/Trigger.cpp > CMakeFiles/selectEv.dir/include/Efficiencies/Trigger.cpp.i
+
+CMakeFiles/selectEv.dir/include/Efficiencies/Trigger.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/selectEv.dir/include/Efficiencies/Trigger.cpp.s"
+	/cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/include/Efficiencies/Trigger.cpp -o CMakeFiles/selectEv.dir/include/Efficiencies/Trigger.cpp.s
+
+CMakeFiles/selectEv.dir/include/Efficiencies/InnerTracker.cpp.o: CMakeFiles/selectEv.dir/flags.make
+CMakeFiles/selectEv.dir/include/Efficiencies/InnerTracker.cpp.o: ../include/Efficiencies/InnerTracker.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/selectEv.dir/include/Efficiencies/InnerTracker.cpp.o"
+	/cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/selectEv.dir/include/Efficiencies/InnerTracker.cpp.o -c /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/include/Efficiencies/InnerTracker.cpp
+
+CMakeFiles/selectEv.dir/include/Efficiencies/InnerTracker.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/selectEv.dir/include/Efficiencies/InnerTracker.cpp.i"
+	/cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/include/Efficiencies/InnerTracker.cpp > CMakeFiles/selectEv.dir/include/Efficiencies/InnerTracker.cpp.i
+
+CMakeFiles/selectEv.dir/include/Efficiencies/InnerTracker.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/selectEv.dir/include/Efficiencies/InnerTracker.cpp.s"
+	/cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/include/Efficiencies/InnerTracker.cpp -o CMakeFiles/selectEv.dir/include/Efficiencies/InnerTracker.cpp.s
+
+CMakeFiles/selectEv.dir/include/Efficiencies/TofStandalone.cpp.o: CMakeFiles/selectEv.dir/flags.make
+CMakeFiles/selectEv.dir/include/Efficiencies/TofStandalone.cpp.o: ../include/Efficiencies/TofStandalone.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/selectEv.dir/include/Efficiencies/TofStandalone.cpp.o"
+	/cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/selectEv.dir/include/Efficiencies/TofStandalone.cpp.o -c /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/include/Efficiencies/TofStandalone.cpp
+
+CMakeFiles/selectEv.dir/include/Efficiencies/TofStandalone.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/selectEv.dir/include/Efficiencies/TofStandalone.cpp.i"
+	/cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/include/Efficiencies/TofStandalone.cpp > CMakeFiles/selectEv.dir/include/Efficiencies/TofStandalone.cpp.i
+
+CMakeFiles/selectEv.dir/include/Efficiencies/TofStandalone.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/selectEv.dir/include/Efficiencies/TofStandalone.cpp.s"
+	/cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/include/Efficiencies/TofStandalone.cpp -o CMakeFiles/selectEv.dir/include/Efficiencies/TofStandalone.cpp.s
+
+CMakeFiles/selectEv.dir/include/Efficiencies/TRD.cpp.o: CMakeFiles/selectEv.dir/flags.make
+CMakeFiles/selectEv.dir/include/Efficiencies/TRD.cpp.o: ../include/Efficiencies/TRD.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/selectEv.dir/include/Efficiencies/TRD.cpp.o"
+	/cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/selectEv.dir/include/Efficiencies/TRD.cpp.o -c /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/include/Efficiencies/TRD.cpp
+
+CMakeFiles/selectEv.dir/include/Efficiencies/TRD.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/selectEv.dir/include/Efficiencies/TRD.cpp.i"
+	/cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/include/Efficiencies/TRD.cpp > CMakeFiles/selectEv.dir/include/Efficiencies/TRD.cpp.i
+
+CMakeFiles/selectEv.dir/include/Efficiencies/TRD.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/selectEv.dir/include/Efficiencies/TRD.cpp.s"
+	/cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/include/Efficiencies/TRD.cpp -o CMakeFiles/selectEv.dir/include/Efficiencies/TRD.cpp.s
+
+CMakeFiles/selectEv.dir/include/Efficiencies/RTI.cpp.o: CMakeFiles/selectEv.dir/flags.make
+CMakeFiles/selectEv.dir/include/Efficiencies/RTI.cpp.o: ../include/Efficiencies/RTI.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/selectEv.dir/include/Efficiencies/RTI.cpp.o"
+	/cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/selectEv.dir/include/Efficiencies/RTI.cpp.o -c /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/include/Efficiencies/RTI.cpp
+
+CMakeFiles/selectEv.dir/include/Efficiencies/RTI.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/selectEv.dir/include/Efficiencies/RTI.cpp.i"
+	/cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/include/Efficiencies/RTI.cpp > CMakeFiles/selectEv.dir/include/Efficiencies/RTI.cpp.i
+
+CMakeFiles/selectEv.dir/include/Efficiencies/RTI.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/selectEv.dir/include/Efficiencies/RTI.cpp.s"
+	/cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/include/Efficiencies/RTI.cpp -o CMakeFiles/selectEv.dir/include/Efficiencies/RTI.cpp.s
+
+CMakeFiles/selectEv.dir/include/Efficiencies/MySel.cpp.o: CMakeFiles/selectEv.dir/flags.make
+CMakeFiles/selectEv.dir/include/Efficiencies/MySel.cpp.o: ../include/Efficiencies/MySel.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/selectEv.dir/include/Efficiencies/MySel.cpp.o"
+	/cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/selectEv.dir/include/Efficiencies/MySel.cpp.o -c /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/include/Efficiencies/MySel.cpp
+
+CMakeFiles/selectEv.dir/include/Efficiencies/MySel.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/selectEv.dir/include/Efficiencies/MySel.cpp.i"
+	/cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/include/Efficiencies/MySel.cpp > CMakeFiles/selectEv.dir/include/Efficiencies/MySel.cpp.i
+
+CMakeFiles/selectEv.dir/include/Efficiencies/MySel.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/selectEv.dir/include/Efficiencies/MySel.cpp.s"
+	/cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/include/Efficiencies/MySel.cpp -o CMakeFiles/selectEv.dir/include/Efficiencies/MySel.cpp.s
+
 # Object files for target selectEv
 selectEv_OBJECTS = \
-"CMakeFiles/selectEv.dir/src/selectEv.cpp.o"
+"CMakeFiles/selectEv.dir/src/selectEv.cpp.o" \
+"CMakeFiles/selectEv.dir/include/Efficiencies/Tracker.cpp.o" \
+"CMakeFiles/selectEv.dir/include/Efficiencies/Trigger.cpp.o" \
+"CMakeFiles/selectEv.dir/include/Efficiencies/InnerTracker.cpp.o" \
+"CMakeFiles/selectEv.dir/include/Efficiencies/TofStandalone.cpp.o" \
+"CMakeFiles/selectEv.dir/include/Efficiencies/TRD.cpp.o" \
+"CMakeFiles/selectEv.dir/include/Efficiencies/RTI.cpp.o" \
+"CMakeFiles/selectEv.dir/include/Efficiencies/MySel.cpp.o"
 
 # External object files for target selectEv
 selectEv_EXTERNAL_OBJECTS =
 
 ../bin/selectEv: CMakeFiles/selectEv.dir/src/selectEv.cpp.o
+../bin/selectEv: CMakeFiles/selectEv.dir/include/Efficiencies/Tracker.cpp.o
+../bin/selectEv: CMakeFiles/selectEv.dir/include/Efficiencies/Trigger.cpp.o
+../bin/selectEv: CMakeFiles/selectEv.dir/include/Efficiencies/InnerTracker.cpp.o
+../bin/selectEv: CMakeFiles/selectEv.dir/include/Efficiencies/TofStandalone.cpp.o
+../bin/selectEv: CMakeFiles/selectEv.dir/include/Efficiencies/TRD.cpp.o
+../bin/selectEv: CMakeFiles/selectEv.dir/include/Efficiencies/RTI.cpp.o
+../bin/selectEv: CMakeFiles/selectEv.dir/include/Efficiencies/MySel.cpp.o
 ../bin/selectEv: CMakeFiles/selectEv.dir/build.make
-../bin/selectEv: /cvmfs/ams.cern.ch/Offline/amsitaly/public/install/x86_64-centos7-gcc9.3/naia/v1.0.2/lib/libNAIAChain.so
+../bin/selectEv: /cvmfs/ams.cern.ch/Offline/amsitaly/public/install/x86_64-centos7-gcc9.3/naia/v1.0.3/lib/libNAIAChain.so
 ../bin/selectEv: /storage/gpfs_ams/ams/users/aubaldi/nsl.install/lib/libNSLSelections.so
-../bin/selectEv: /cvmfs/ams.cern.ch/Offline/amsitaly/public/install/x86_64-centos7-gcc9.3/naia/v1.0.2/lib/libNAIAContainers.so
-../bin/selectEv: /cvmfs/ams.cern.ch/Offline/amsitaly/public/install/x86_64-centos7-gcc9.3/naia/v1.0.2/lib/libNAIAUtility.so
+../bin/selectEv: /cvmfs/ams.cern.ch/Offline/amsitaly/public/install/x86_64-centos7-gcc9.3/naia/v1.0.3/lib/libNAIAContainers.so
+../bin/selectEv: /cvmfs/ams.cern.ch/Offline/amsitaly/public/install/x86_64-centos7-gcc9.3/naia/v1.0.3/lib/libNAIAUtility.so
 ../bin/selectEv: /cvmfs/ams.cern.ch/Offline/amsitaly/public/install/x86_64-centos7-gcc9.3/root-6.26.02/lib/libCore.so
 ../bin/selectEv: /cvmfs/ams.cern.ch/Offline/amsitaly/public/install/x86_64-centos7-gcc9.3/root-6.26.02/lib/libImt.so
 ../bin/selectEv: /cvmfs/ams.cern.ch/Offline/amsitaly/public/install/x86_64-centos7-gcc9.3/root-6.26.02/lib/libRIO.so
@@ -143,7 +248,7 @@ selectEv_EXTERNAL_OBJECTS =
 ../bin/selectEv: /cvmfs/ams.cern.ch/Offline/amsitaly/public/install/x86_64-centos7-gcc9.3/root-6.26.02/lib/libThread.so
 ../bin/selectEv: /cvmfs/ams.cern.ch/Offline/amsitaly/public/install/x86_64-centos7-gcc9.3/root-6.26.02/lib/libCore.so
 ../bin/selectEv: CMakeFiles/selectEv.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable ../bin/selectEv"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Linking CXX executable ../bin/selectEv"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/selectEv.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

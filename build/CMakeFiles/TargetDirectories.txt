@@ -1,6 +1,13 @@
 /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles/rebuild_cache.dir
-/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles/selectEv.dir
-/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles/checkVar.dir
-/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles/eff.dir
-/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles/hplot.dir
 /storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles/edit_cache.dir
+/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles/hplot.dir
+/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles/eff.dir
+/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles/checkVar.dir
+/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles/CompareEff.dir
+/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles/selectEv.dir
+/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles/BuildFlux.dir
+/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles/fragmentation.dir
+/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles/CreateTemplatesBelowL1.dir
+/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles/printEverything.dir
+/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles/fitTemplates.dir
+/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build/CMakeFiles/CompareFlux.dir

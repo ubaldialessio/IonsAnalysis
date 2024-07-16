@@ -28,10 +28,10 @@ if (opt.Contains("dat") ) {
 	TH1D *d_sample_tr  = (TH1D*)((TH2F *)dat->Get("sample_tr"))->ProjectionY("n",start_bin,stop_bin);
 	TH1D *d_sample_trig= (TH1D*)((TH2F *)dat->Get("sample_trig"))->ProjectionY("o",start_bin,stop_bin);
 	TH1D *d_phys_trig  = (TH1D*)((TH2F *)dat->Get("phys_trig"))->ProjectionY("p",start_bin,stop_bin);
-	auto d_tof_eff = GetEff(d_pass_tof,d_sample_tof,"efficiency");
-	auto d_l1_eff  = GetEff(d_pass_l1, d_sample_l1,"efficiency");
-	auto d_tr_eff  = GetEff(d_pass_tr, d_sample_tr,"efficiency");
-	auto d_trig_eff= GetEff(d_phys_trig,d_sample_trig,"efficiency");
+	auto dataEff_tf = /*new TGraphAsymmErrors(d_pass_tof,d_sample_tof);*/ GetEff(d_pass_tof,d_sample_tof,"simple");
+	auto dataEff_l1 = /*new TGraphAsymmErrors(d_pass_l1, d_sample_l1);*/ GetEff(d_pass_l1, d_sample_l1,"simple");
+	auto dataEff_tk = /*new TGraphAsymmErrors(d_pass_tr, d_sample_tr);*/ GetEff(d_pass_tr, d_sample_tr,"simple");
+	auto dataEff_tr = /*new TGraphAsymmErrors(d_phys_trig,d_sample_trig);*/ GetEff(d_phys_trig,d_sample_trig,"simple");
 	auto hwidth = (TH1D*)hist_rig->Clone();
 	for(int i=1; i<=hist_rig->GetNbinsX(); ++i) {
 		hwidth->SetBinContent(i, hwidth->GetBinWidth(i));
@@ -39,16 +39,17 @@ if (opt.Contains("dat") ) {
 	}
 	auto lt     = (TH1D *)((TH2D *)dat->Get("lvt_25"))->ProjectionY("j", start_bin, stop_bin);
 	auto counts = (TH1D *)((TH2D *)dat->Get("rigidity"))->ProjectionY("k", start_bin, stop_bin);
-	auto oldflux = (TH1D*)counts->Clone();
-	oldflux->Divide(lt);
-	oldflux->Divide(hwidth);
-	outfile->WriteTObject(d_tof_eff,"d_tof_eff");
-	outfile->WriteTObject(d_l1_eff,"d_l1_eff");
-	outfile->WriteTObject(d_tr_eff,"d_tr_eff");
-	outfile->WriteTObject(d_trig_eff,"d_trig_eff");
+	auto rate = (TH1D*)counts->Clone();
+	rate->Divide(lt);
+	rate->Divide(hwidth);
+	outfile->WriteTObject(dataEff_tf,"dataEff_tf");
+	outfile->WriteTObject(dataEff_l1 ,"dataEff_l1 ");
+	outfile->WriteTObject(dataEff_tr,"dataEff_tr");
+	outfile->WriteTObject(dataEff_tk,"dataEff_tk");
 	outfile->WriteTObject(lt,"lt");
 	outfile->WriteTObject(counts,"counts");
-	outfile->WriteTObject(oldflux,"oldflux");
+	outfile->WriteTObject(rate,"rate");
+	outfile->Close();
 }
 ////MONTECARLO////
 if (opt.Contains("mc") ) {
@@ -64,10 +65,10 @@ if (opt.Contains("mc") ) {
 	TH1D *m_sample_tr  = (TH1D*)((TH2F *)mc->Get("sample_tr"))->ProjectionY("f",start_bin,stop_bin);
 	TH1D *m_sample_trig= (TH1D*)((TH2F *)mc->Get("sample_trig"))->ProjectionY("g",start_bin,stop_bin);
 	TH1D *m_phys_trig  = (TH1D*)((TH2F *)mc->Get("phys_trig"))->ProjectionY("h",start_bin,stop_bin);
-	auto m_tof_eff = GetEff(m_pass_tof,m_sample_tof,"simple");
-	auto m_l1_eff  = GetEff(m_pass_l1, m_sample_l1,"simple");
-	auto m_tr_eff  = GetEff(m_pass_tr, m_sample_tr,"simple");
-	auto m_trig_eff= GetEff(m_phys_trig,m_sample_trig,"simple");
+	auto mcEff_l1 = new TGraphAsymmErrors(m_pass_l1  , m_sample_l1);
+	auto mcEff_tf = new TGraphAsymmErrors(m_pass_tof , m_sample_tof);
+	auto mcEff_tr = new TGraphAsymmErrors(m_phys_trig, m_sample_trig);
+	auto mcEff_tk = new TGraphAsymmErrors(m_pass_tr  , m_sample_tr);
 	TH1D *mc_pass_gen= (TH1D *)mc->Get("mc_pass_gen");
 	TH1D *mc_samp	 = (TH1D *)mc->Get("mc_samp");
 	TH1D *mc_pass    = (TH1D *)mc->Get("mc_pass");
@@ -77,10 +78,10 @@ if (opt.Contains("mc") ) {
 	auto true_acc= GetEff(mc_pass_gen, mc_samp,"simple");
 	true_acc->Scale(TMath::Pi() * 3.9*3.9, "nosw2");
 	true_acc->SetName("true_acc");
-	outfile->WriteTObject(m_tof_eff,"m_tof_eff");
-	outfile->WriteTObject(m_l1_eff,"m_l1_eff");
-	outfile->WriteTObject(m_tr_eff,"m_tr_eff");
-	outfile->WriteTObject(m_trig_eff,"m_trig_eff");
+	outfile->WriteTObject(mcEff_tf,"mcEff_tf");
+	outfile->WriteTObject(mcEff_l1,"mcEff_l1");
+	outfile->WriteTObject(mcEff_tr,"mcEff_tr");
+	outfile->WriteTObject(mcEff_tk,"mcEff_tk");
 	outfile->WriteTObject(true_acc,"true_acc"); 
 }
 ////BOTH WITH SPLINE////
@@ -129,10 +130,16 @@ if (opt.Contains("both")) {
 	auto flux = (TH1D *)counts->Clone();
 	flux->Divide(lvt_25);
 	flux->Divide(hwidth);
-	auto dataEff_l1 = GetEff(d_pass_l1  , d_sample_l1,"simple");
-	auto dataEff_tf = GetEff(d_pass_tof , d_sample_tof,"simple");
-	auto dataEff_tr = GetEff(d_phys_trig, d_sample_trig,"simple");
-	auto dataEff_tk = GetEff(d_pass_tr  , d_sample_tr,"simple");
+	auto dataEff_l1 = new TGraphAsymmErrors(d_pass_l1  , d_sample_l1); //GetEff(d_pass_l1  , d_sample_l1,"simple");
+	auto dataEff_tf = new TGraphAsymmErrors(d_pass_tof  , d_sample_tof); //GetEff(d_pass_tof , d_sample_tof,"simple");
+	auto dataEff_tr = new TGraphAsymmErrors(d_phys_trig, d_sample_trig); //GetEff(d_phys_trig, d_sample_trig,"simple");
+	auto dataEff_tk = new TGraphAsymmErrors(d_pass_tr  , d_sample_tr); //GetEff(d_pass_tr  , d_sample_tr,"simple");
+
+	auto deff_l1 = GetEff(d_pass_l1  , d_sample_l1, "simple");
+	auto deff_tf = GetEff(d_pass_tof , d_sample_tof, "simple");
+	auto deff_tr = GetEff(d_phys_trig, d_sample_trig, "simple");
+	auto deff_tk = GetEff(d_pass_tr  , d_sample_tr, "simple");
+
 	auto rate = (TH1D *)counts->Clone();
 	rate->Divide(lvt_25);
 	rate->Divide(hwidth);
@@ -141,22 +148,34 @@ if (opt.Contains("both")) {
 	outfile->WriteTObject(counts, "counts");
 	
 	for(int iter=0; iter<8; ++iter) {
-		    auto mcEff_l1 = GetEff(m_pass_l1  , m_sample_l1, "simple");
-		    auto mcEff_tf = GetEff(m_pass_tof , m_sample_tof, "simple");
-		    auto mcEff_tr = GetEff(m_phys_trig, m_sample_trig, "simple");
-		    auto mcEff_tk = GetEff(m_pass_tr  , m_sample_tr, "simple");
-		    auto damc_l1 = GetEff(dataEff_l1, mcEff_l1, "correction");
-		    auto damc_tf = GetEff(dataEff_tf, mcEff_tf, "correction");
-		    auto damc_tr = GetEff(dataEff_tr, mcEff_tr, "correction");
-		    auto damc_tk = GetEff(dataEff_tk, mcEff_tk, "correction");
-		    auto final_damc_l1 = autospline(damc_l1, 0.5, 30);
-		    auto final_damc_tf = autospline(damc_tf, 0.5, 15);
-		    auto final_damc_tr = autospline(damc_tr, 0.5, 30);
-		    auto final_damc_tk = autospline(damc_tk, 0.5, 7);
+		    auto mcEff_l1 = new TGraphAsymmErrors(m_pass_l1  , m_sample_l1);  //GetEff(m_pass_l1  , m_sample_l1, "simple");
+		    auto mcEff_tf = new TGraphAsymmErrors(m_pass_tof , m_sample_tof);  //GetEff(m_pass_tof , m_sample_tof, "simple");
+		    auto mcEff_tr = new TGraphAsymmErrors(m_phys_trig, m_sample_trig);  //GetEff(m_phys_trig, m_sample_trig, "simple");
+		    auto mcEff_tk = new TGraphAsymmErrors(m_pass_tr  , m_sample_tr);  //GetEff(m_pass_tr  , m_sample_tr, "simple");
+
+			auto meff_l1 = GetEff(m_pass_l1  , m_sample_l1, "simple");
+			auto meff_tf = GetEff(m_pass_tof , m_sample_tof, "simple");
+			auto meff_tr = GetEff(m_phys_trig, m_sample_trig, "simple");
+			auto meff_tk = GetEff(m_pass_tr  , m_sample_tr, "simple");
+
+		    auto damc_l1 = DivideAsymmGraph(dataEff_l1, mcEff_l1, "");
+		    auto damc_tf = DivideAsymmGraph(dataEff_tf, mcEff_tf, "");
+		    auto damc_tr = DivideAsymmGraph(dataEff_tr, mcEff_tr, "");
+		    auto damc_tk = DivideAsymmGraph(dataEff_tk, mcEff_tk, "");
+
+			/*auto Damc_l1 = GetEff(deff_l1,meff_l1,"crrection");
+			auto Damc_tf = GetEff(deff_tf,meff_tf,"crrection");
+			auto Damc_tr = GetEff(deff_tr,meff_tr,"crrection");
+			auto Damc_tk = GetEff(deff_tk,meff_tk,"crrection");
+
+		    auto final_damc_l1 = autospline(Damc_l1, 0.5, 30);
+		    auto final_damc_tf = autospline(Damc_tf, 0.5, 15);
+		    auto final_damc_tr = autospline(Damc_tr, 0.5, 30);
+		    auto final_damc_tk = autospline(Damc_tk, 0.5, 7);
 		    final_damc_tot = (TH1D*)final_damc_l1->Clone();
 		    final_damc_tot->Multiply(final_damc_tf);
 		    final_damc_tot->Multiply(final_damc_tr);
-		    final_damc_tot->Multiply(final_damc_tk);
+		    final_damc_tot->Multiply(final_damc_tk);*/
 		    if(iter) {
 		      acc = GetEff(mc_pass, mc_samp, "simple");
 		      acc->Scale(TMath::Pi() * 3.9 * 3.9, "nosw2");
@@ -175,10 +194,10 @@ if (opt.Contains("both")) {
 				outfile->WriteTObject(damc_tf, Form("damc_tf_%i", iter));
 				outfile->WriteTObject(damc_tr, Form("damc_tr_%i", iter));
 				outfile->WriteTObject(damc_tk, Form("damc_tk_%i", iter));
-				outfile->WriteTObject(final_damc_l1, Form("final_damc_l1_%i", iter));
+				/*outfile->WriteTObject(final_damc_l1, Form("final_damc_l1_%i", iter));
 				outfile->WriteTObject(final_damc_tf, Form("final_damc_tf_%i", iter));
 				outfile->WriteTObject(final_damc_tr, Form("final_damc_tr_%i", iter));
-				outfile->WriteTObject(final_damc_tk, Form("final_damc_tk_%i", iter));
+				outfile->WriteTObject(final_damc_tk, Form("final_damc_tk_%i", iter));*/
 				outfile->WriteTObject(final_damc_tot, Form("final_damc_tot_%i", iter));
 				outfile->WriteTObject(acc, Form("acc_%i", iter));
 				outfile->WriteTObject(spline_acc, Form("spline_acc_%i", iter));

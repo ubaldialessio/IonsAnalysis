@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
 
 	auto lvt_25	  	  = new TH2D("", ";Utime;R(GV)", nTbins-1, Tbins, nRbins-1, Rbins);
 	auto rigidity     = new TH2D("", ";Utime;R(GV)", nTbins-1, Tbins, nRbins-1, Rbins);
-	auto L1charge     = new TH1D("", "L1 Charge (Z)", 300, 0, 20);
+	auto L1Charge     = new TH1D("", "L1 Charge (Z)", 300, 0, 20);
 	auto allRigL1	  = new TH1D("", ";R(GV)", nRbins-1, Rbins);
 	auto genRig		  = (TH1D*)hist_log->Clone("genRig");
 
@@ -29,21 +29,39 @@ int main(int argc, char *argv[]) {
 	const int nRigbins_HeavyIons = 21;
 	const double Rigbins_HeavyIons[nRigbins_HeavyIons] = {0.8,  2.40, 2.97, 3.64, 4.43, 5.37, 6.47, 7.76, 9.26, 11.00, 13.0,
 	                                                  15.3, 18.0, 21.1, 24.7, 28.8, 33.5, 38.9, 45.1, 52.2, 5000};
-	TList *l1TemplateList = new TList();
-	TList *l2TemplateList = new TList();
-	auto rigBinTemplate = new TH1D("RigTemplateLightIons", "R (GV)", nRigbins_LightIons - 1, Rigbins_LightIons);
+	TList *l1TemplateList   = new TList();
+	TList *l2TemplateList   = new TList();
+	TList *l1KernelTreeList = new TList();
+	TList *l2KernelTreeList = new TList();
+
+	float L1charge = 0;
+	float L2charge = 0;
+  	double L1weight = 1;
+	double L2weight = 1;
+
+	auto rigBinTemplate = new TH1D("RigTemplateLightIons", "R (GV)", nRigbins_HeavyIons - 1, Rigbins_HeavyIons);
 	
-	for (Int_t ibin = 0; ibin < rigBinTemplate->GetNbinsX(); ibin++) 
+	for (Int_t ibin = 0; ibin < rigBinTemplate->GetNbinsX(); ibin++) {
 	    l1TemplateList->Add(new TH1D(Form("L1Template_%03i", ibin),
 	                               Form("%5.3f < R (GV) < %5.3f;Q_{L1X};Counts", rigBinTemplate->GetBinLowEdge(ibin + 1),
 	                                    rigBinTemplate->GetBinLowEdge(ibin + 2)),
 	                               600, 0, 20));
-	                               
-	for (Int_t ibin = 0; ibin < rigBinTemplate->GetNbinsX(); ibin++) 
-    	l2TemplateList->Add(new TH1D(Form("L2Template_%03i", ibin),
+		l2TemplateList->Add(new TH1D(Form("L2Template_%03i", ibin),
                                Form("%5.3f < R (GV) < %5.3f;Q_{L2X};Counts", rigBinTemplate->GetBinLowEdge(ibin + 1),
-                                    rigBinTemplate->GetBinLowEdge(ibin + 2)),
-                               600, 0, 20));
+                                        rigBinTemplate->GetBinLowEdge(ibin + 2)),
+                               		600, 0, 20));
+		l1KernelTreeList->Add(new TTree(Form("L1KTree_%03i", ibin), Form("%5.3f < R (GV) < %5.3f", rigBinTemplate->GetBinLowEdge(ibin + 1),
+                                        rigBinTemplate->GetBinLowEdge(ibin + 2))));
+		l2KernelTreeList->Add(new TTree(Form("L2KTree_%03i", ibin), Form("%5.3f < R (GV) < %5.3f", rigBinTemplate->GetBinLowEdge(ibin + 1),
+                                        rigBinTemplate->GetBinLowEdge(ibin + 2))));
+										
+		static_cast<TTree *>(l1KernelTreeList->At(ibin))->SetDirectory(0);
+    	static_cast<TTree *>(l1KernelTreeList->At(ibin))->Branch("L1charge", &(L1charge), "L1charge/F");
+    	static_cast<TTree *>(l1KernelTreeList->At(ibin))->Branch("L1weight", &L1weight, "L1weight/D");
+		static_cast<TTree *>(l2KernelTreeList->At(ibin))->SetDirectory(0);
+    	static_cast<TTree *>(l2KernelTreeList->At(ibin))->Branch("L2charge", &(L2charge), "L2charge/F");
+    	static_cast<TTree *>(l2KernelTreeList->At(ibin))->Branch("L2weight", &L2weight, "L2weight/D");
+	}                             
 
 	// this mask will check for charge > 2  according to both tracker or tof
 	NAIA::Category cat = NAIA::Category::ChargeGT2_Trk | NAIA::Category::ChargeGT2_Tof;
@@ -62,18 +80,18 @@ int main(int argc, char *argv[]) {
 	//process
 	if (validInput) {
 		NAIA::NAIAChain chain;
-		if(infilename.Contains(".root") && filesystem::exists(infilename.Data()) ){
+		if(infilename.Contains(".root") /*&& filesystem::exists(infilename.Data())*/ ){
 		    chain.Add(infilename.Data());
-		}else if (infilename.Contains(".txt") && filesystem::exists(infilename.Data()) ){
+		}else if (infilename.Contains(".txt") /*&& filesystem::exists(infilename.Data())*/ ){
 		    ifstream infilelist(infilename.Data());
 		    TString bufname;
 		    while(infilelist >> bufname) 
-		      if(bufname.Contains(".root") && filesystem::exists(bufname.Data()))
+		      if(bufname.Contains(".root") /*&& filesystem::exists(bufname.Data())*/ )
 		        chain.Add(bufname.Data());
 		}
 		chain.SetupBranches();
 		bool isMC = chain.IsMC();
-		if (where.Contains("AboveL1") && isMC==true) out="/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/Fragmentation/AboveL1/"+ionPath+"/"+outname;
+		if (where.Contains("AboveL1") && isMC==true) out="/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/Fragmentation/BelowL1/"+ionPath+"/"+outname;
 		if (where.Contains("BelowL1") ) out="/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/Fragmentation/BelowL1/"+ionPath+"/"+outname;
 		unsigned int utime, oldtime;
 		float reco_il1, reco_inn, beta, lt, l1charge;
@@ -195,7 +213,8 @@ auto l2temp =
 					if (bin < 1 || bin > rigBinTemplate->GetNbinsX())
 						continue;
 					auto L1charge = event.trTrackBase->LayerChargeXY[0][CRT];
-					static_cast<TH1D *>(l1TemplateList->At(bin - 1))->Fill(L1charge);
+					static_cast<TH1D *>(l1TemplateList->At(bin - 1))->Fill(L1charge,L1weight);
+					static_cast<TTree *>(l1KernelTreeList->At(bin - 1))->Fill();
 				}
 				if (l2temp(event)) {
 					auto Rigidity_IL1 = event.trTrackBase->Rigidity[FIT][IL1];
@@ -203,7 +222,8 @@ auto l2temp =
 					if (bin < 1 || bin > rigBinTemplate->GetNbinsX())
 						continue;
 					auto L2charge = event.trTrackBase->LayerChargeXY[1][CRT];
-				    static_cast<TH1D *>(l2TemplateList->At(bin - 1))->Fill(L2charge);
+				    static_cast<TH1D *>(l2TemplateList->At(bin - 1))->Fill(L2charge,L2weight);
+					static_cast<TTree *>(l2KernelTreeList->At(bin - 1))->Fill();
 				}
 			}
       		if (isMC) tree->Fill();	
@@ -212,7 +232,7 @@ auto l2temp =
 	auto outfile = new TFile(out, "recreate");
 	outfile->WriteTObject(rigidity, "rigidity");
 	outfile->WriteTObject(lvt_25, "lvt_25");
-	outfile->WriteTObject(L1charge, "L1charge");
+	outfile->WriteTObject(L1Charge, "L1Charge");
 	outfile->WriteTObject(l1TemplateList, Form("L1TemplateList_%i", charge), "Overwrite");
 	outfile->WriteTObject(l2TemplateList, Form("L2TemplateList_%i", charge), "Overwrite");
 	if (isMC) {

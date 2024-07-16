@@ -20,10 +20,10 @@ void sum(int charge) {
     TString listName2 = "L2TemplateList_" + TString::Format("%d", charge);
 
     // Apri il file ROOT
-    TString path1 = "/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/Fragmentation/BelowL1/";
+    TString path1 = "../Fragmentation/BelowL1/";
     TString nucleus = getIonName(charge);
     TString fileName = path1+nucleus+"/"+nucleus+".root";
-    TFile *file = TFile::Open(fileName.Data() );
+    TFile *file = TFile::Open(fileName.Data());
     if (!file || file->IsZombie()) {
         printf("Errore nell'aprire il file\n");
         return;
@@ -38,9 +38,9 @@ void sum(int charge) {
     }
 
     //Crea il file .root di output
-    TString path = "/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/Fragmentation/BelowL1/Templates/";
+    TString path = "./Fragmentation/BelowL1/Templates/";
     TString froot = path+nucleus+".root";
-    auto outfile = new TFile(froot, "recreate");
+    auto outfile = new TFile(froot, "RECREATE");
     
 
     // Crea la canvas per gli istogrammi sommati e bin x bin
@@ -98,8 +98,8 @@ void sum(int charge) {
         hist1->SetStats(kFALSE);
         hist2->SetStats(kFALSE);
         //Normalizzali
-        hist1->Scale(1.0/hist1->GetEntries() );
-        hist2->Scale(1.0/hist2->GetEntries() );
+        //hist1->Scale(1.0/hist1->GetEntries() );
+        //hist2->Scale(1.0/hist2->GetEntries() );
         // Aggiungi una legenda
         TLegend *legend1 = new TLegend(0.7, 0.8, 0.9, 0.9);
         legend1->AddEntry(hist1, "L1", "lp");
@@ -144,18 +144,18 @@ void sum(int charge) {
     // Disegna gli istogrammi sommati
     sumL1->SetTitle(nucleus.Data() );
     sumL1->GetXaxis()->SetTitle("Q");
-    sumL1->GetYaxis()->SetTitle("Normalized Entries");
+    sumL1->GetYaxis()->SetTitle("Entries");
     sumL2->SetTitle(nucleus.Data() );
     sumL2->GetXaxis()->SetTitle("Q");
-    sumL2->GetYaxis()->SetTitle("Normalized Entries");
+    sumL2->GetYaxis()->SetTitle("Entries");
     sumL1->SetStats(kFALSE);
     sumL2->SetStats(kFALSE);
     //Normalizzali
-    sumL1->Scale(1.0/sumL1->GetEntries() );
-    sumL2->Scale(1.0/sumL2->GetEntries() );
+    //sumL1->Scale(1.0/sumL1->GetEntries() );
+    //sumL2->Scale(1.0/sumL2->GetEntries() );
     canvasSum->cd();
-    sumL1->DrawNormalized("E");
-    sumL2->DrawNormalized("E SAME");
+    sumL1->Draw("E");
+    sumL2->Draw("E SAME");
 
     // Aggiungi una legenda
     TLegend *legend = new TLegend(0.7, 0.8, 0.9, 0.9);

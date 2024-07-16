@@ -130,30 +130,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named selectEv
+# Target rules for targets named hplot
 
 # Build rule for target.
-selectEv: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 selectEv
-.PHONY : selectEv
+hplot: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 hplot
+.PHONY : hplot
 
 # fast build rule for target.
-selectEv/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/build
-.PHONY : selectEv/fast
-
-#=============================================================================
-# Target rules for targets named checkVar
-
-# Build rule for target.
-checkVar: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 checkVar
-.PHONY : checkVar
-
-# fast build rule for target.
-checkVar/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/checkVar.dir/build.make CMakeFiles/checkVar.dir/build
-.PHONY : checkVar/fast
+hplot/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/hplot.dir/build.make CMakeFiles/hplot.dir/build
+.PHONY : hplot/fast
 
 #=============================================================================
 # Target rules for targets named eff
@@ -169,17 +156,466 @@ eff/fast:
 .PHONY : eff/fast
 
 #=============================================================================
-# Target rules for targets named hplot
+# Target rules for targets named checkVar
 
 # Build rule for target.
-hplot: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 hplot
-.PHONY : hplot
+checkVar: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 checkVar
+.PHONY : checkVar
 
 # fast build rule for target.
-hplot/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hplot.dir/build.make CMakeFiles/hplot.dir/build
-.PHONY : hplot/fast
+checkVar/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/checkVar.dir/build.make CMakeFiles/checkVar.dir/build
+.PHONY : checkVar/fast
+
+#=============================================================================
+# Target rules for targets named CompareEff
+
+# Build rule for target.
+CompareEff: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CompareEff
+.PHONY : CompareEff
+
+# fast build rule for target.
+CompareEff/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/CompareEff.dir/build.make CMakeFiles/CompareEff.dir/build
+.PHONY : CompareEff/fast
+
+#=============================================================================
+# Target rules for targets named selectEv
+
+# Build rule for target.
+selectEv: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 selectEv
+.PHONY : selectEv
+
+# fast build rule for target.
+selectEv/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/build
+.PHONY : selectEv/fast
+
+#=============================================================================
+# Target rules for targets named BuildFlux
+
+# Build rule for target.
+BuildFlux: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 BuildFlux
+.PHONY : BuildFlux
+
+# fast build rule for target.
+BuildFlux/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BuildFlux.dir/build.make CMakeFiles/BuildFlux.dir/build
+.PHONY : BuildFlux/fast
+
+#=============================================================================
+# Target rules for targets named fragmentation
+
+# Build rule for target.
+fragmentation: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 fragmentation
+.PHONY : fragmentation
+
+# fast build rule for target.
+fragmentation/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/build
+.PHONY : fragmentation/fast
+
+#=============================================================================
+# Target rules for targets named CreateTemplatesBelowL1
+
+# Build rule for target.
+CreateTemplatesBelowL1: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CreateTemplatesBelowL1
+.PHONY : CreateTemplatesBelowL1
+
+# fast build rule for target.
+CreateTemplatesBelowL1/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/CreateTemplatesBelowL1.dir/build.make CMakeFiles/CreateTemplatesBelowL1.dir/build
+.PHONY : CreateTemplatesBelowL1/fast
+
+#=============================================================================
+# Target rules for targets named printEverything
+
+# Build rule for target.
+printEverything: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 printEverything
+.PHONY : printEverything
+
+# fast build rule for target.
+printEverything/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/printEverything.dir/build.make CMakeFiles/printEverything.dir/build
+.PHONY : printEverything/fast
+
+#=============================================================================
+# Target rules for targets named fitTemplates
+
+# Build rule for target.
+fitTemplates: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 fitTemplates
+.PHONY : fitTemplates
+
+# fast build rule for target.
+fitTemplates/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fitTemplates.dir/build.make CMakeFiles/fitTemplates.dir/build
+.PHONY : fitTemplates/fast
+
+#=============================================================================
+# Target rules for targets named CompareFlux
+
+# Build rule for target.
+CompareFlux: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CompareFlux
+.PHONY : CompareFlux
+
+# fast build rule for target.
+CompareFlux/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/CompareFlux.dir/build.make CMakeFiles/CompareFlux.dir/build
+.PHONY : CompareFlux/fast
+
+include/Efficiencies/InnerTracker.o: include/Efficiencies/InnerTracker.cpp.o
+
+.PHONY : include/Efficiencies/InnerTracker.o
+
+# target to build an object file
+include/Efficiencies/InnerTracker.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/include/Efficiencies/InnerTracker.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/include/Efficiencies/InnerTracker.cpp.o
+.PHONY : include/Efficiencies/InnerTracker.cpp.o
+
+include/Efficiencies/InnerTracker.i: include/Efficiencies/InnerTracker.cpp.i
+
+.PHONY : include/Efficiencies/InnerTracker.i
+
+# target to preprocess a source file
+include/Efficiencies/InnerTracker.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/include/Efficiencies/InnerTracker.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/include/Efficiencies/InnerTracker.cpp.i
+.PHONY : include/Efficiencies/InnerTracker.cpp.i
+
+include/Efficiencies/InnerTracker.s: include/Efficiencies/InnerTracker.cpp.s
+
+.PHONY : include/Efficiencies/InnerTracker.s
+
+# target to generate assembly for a file
+include/Efficiencies/InnerTracker.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/include/Efficiencies/InnerTracker.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/include/Efficiencies/InnerTracker.cpp.s
+.PHONY : include/Efficiencies/InnerTracker.cpp.s
+
+include/Efficiencies/MySel.o: include/Efficiencies/MySel.cpp.o
+
+.PHONY : include/Efficiencies/MySel.o
+
+# target to build an object file
+include/Efficiencies/MySel.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/include/Efficiencies/MySel.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/include/Efficiencies/MySel.cpp.o
+.PHONY : include/Efficiencies/MySel.cpp.o
+
+include/Efficiencies/MySel.i: include/Efficiencies/MySel.cpp.i
+
+.PHONY : include/Efficiencies/MySel.i
+
+# target to preprocess a source file
+include/Efficiencies/MySel.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/include/Efficiencies/MySel.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/include/Efficiencies/MySel.cpp.i
+.PHONY : include/Efficiencies/MySel.cpp.i
+
+include/Efficiencies/MySel.s: include/Efficiencies/MySel.cpp.s
+
+.PHONY : include/Efficiencies/MySel.s
+
+# target to generate assembly for a file
+include/Efficiencies/MySel.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/include/Efficiencies/MySel.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/include/Efficiencies/MySel.cpp.s
+.PHONY : include/Efficiencies/MySel.cpp.s
+
+include/Efficiencies/RTI.o: include/Efficiencies/RTI.cpp.o
+
+.PHONY : include/Efficiencies/RTI.o
+
+# target to build an object file
+include/Efficiencies/RTI.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/include/Efficiencies/RTI.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/include/Efficiencies/RTI.cpp.o
+.PHONY : include/Efficiencies/RTI.cpp.o
+
+include/Efficiencies/RTI.i: include/Efficiencies/RTI.cpp.i
+
+.PHONY : include/Efficiencies/RTI.i
+
+# target to preprocess a source file
+include/Efficiencies/RTI.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/include/Efficiencies/RTI.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/include/Efficiencies/RTI.cpp.i
+.PHONY : include/Efficiencies/RTI.cpp.i
+
+include/Efficiencies/RTI.s: include/Efficiencies/RTI.cpp.s
+
+.PHONY : include/Efficiencies/RTI.s
+
+# target to generate assembly for a file
+include/Efficiencies/RTI.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/include/Efficiencies/RTI.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/include/Efficiencies/RTI.cpp.s
+.PHONY : include/Efficiencies/RTI.cpp.s
+
+include/Efficiencies/TRD.o: include/Efficiencies/TRD.cpp.o
+
+.PHONY : include/Efficiencies/TRD.o
+
+# target to build an object file
+include/Efficiencies/TRD.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/include/Efficiencies/TRD.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/include/Efficiencies/TRD.cpp.o
+.PHONY : include/Efficiencies/TRD.cpp.o
+
+include/Efficiencies/TRD.i: include/Efficiencies/TRD.cpp.i
+
+.PHONY : include/Efficiencies/TRD.i
+
+# target to preprocess a source file
+include/Efficiencies/TRD.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/include/Efficiencies/TRD.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/include/Efficiencies/TRD.cpp.i
+.PHONY : include/Efficiencies/TRD.cpp.i
+
+include/Efficiencies/TRD.s: include/Efficiencies/TRD.cpp.s
+
+.PHONY : include/Efficiencies/TRD.s
+
+# target to generate assembly for a file
+include/Efficiencies/TRD.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/include/Efficiencies/TRD.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/include/Efficiencies/TRD.cpp.s
+.PHONY : include/Efficiencies/TRD.cpp.s
+
+include/Efficiencies/TofStandalone.o: include/Efficiencies/TofStandalone.cpp.o
+
+.PHONY : include/Efficiencies/TofStandalone.o
+
+# target to build an object file
+include/Efficiencies/TofStandalone.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/include/Efficiencies/TofStandalone.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/include/Efficiencies/TofStandalone.cpp.o
+.PHONY : include/Efficiencies/TofStandalone.cpp.o
+
+include/Efficiencies/TofStandalone.i: include/Efficiencies/TofStandalone.cpp.i
+
+.PHONY : include/Efficiencies/TofStandalone.i
+
+# target to preprocess a source file
+include/Efficiencies/TofStandalone.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/include/Efficiencies/TofStandalone.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/include/Efficiencies/TofStandalone.cpp.i
+.PHONY : include/Efficiencies/TofStandalone.cpp.i
+
+include/Efficiencies/TofStandalone.s: include/Efficiencies/TofStandalone.cpp.s
+
+.PHONY : include/Efficiencies/TofStandalone.s
+
+# target to generate assembly for a file
+include/Efficiencies/TofStandalone.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/include/Efficiencies/TofStandalone.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/include/Efficiencies/TofStandalone.cpp.s
+.PHONY : include/Efficiencies/TofStandalone.cpp.s
+
+include/Efficiencies/Tracker.o: include/Efficiencies/Tracker.cpp.o
+
+.PHONY : include/Efficiencies/Tracker.o
+
+# target to build an object file
+include/Efficiencies/Tracker.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/include/Efficiencies/Tracker.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/include/Efficiencies/Tracker.cpp.o
+.PHONY : include/Efficiencies/Tracker.cpp.o
+
+include/Efficiencies/Tracker.i: include/Efficiencies/Tracker.cpp.i
+
+.PHONY : include/Efficiencies/Tracker.i
+
+# target to preprocess a source file
+include/Efficiencies/Tracker.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/include/Efficiencies/Tracker.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/include/Efficiencies/Tracker.cpp.i
+.PHONY : include/Efficiencies/Tracker.cpp.i
+
+include/Efficiencies/Tracker.s: include/Efficiencies/Tracker.cpp.s
+
+.PHONY : include/Efficiencies/Tracker.s
+
+# target to generate assembly for a file
+include/Efficiencies/Tracker.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/include/Efficiencies/Tracker.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/include/Efficiencies/Tracker.cpp.s
+.PHONY : include/Efficiencies/Tracker.cpp.s
+
+include/Efficiencies/Trigger.o: include/Efficiencies/Trigger.cpp.o
+
+.PHONY : include/Efficiencies/Trigger.o
+
+# target to build an object file
+include/Efficiencies/Trigger.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/include/Efficiencies/Trigger.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/include/Efficiencies/Trigger.cpp.o
+.PHONY : include/Efficiencies/Trigger.cpp.o
+
+include/Efficiencies/Trigger.i: include/Efficiencies/Trigger.cpp.i
+
+.PHONY : include/Efficiencies/Trigger.i
+
+# target to preprocess a source file
+include/Efficiencies/Trigger.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/include/Efficiencies/Trigger.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/include/Efficiencies/Trigger.cpp.i
+.PHONY : include/Efficiencies/Trigger.cpp.i
+
+include/Efficiencies/Trigger.s: include/Efficiencies/Trigger.cpp.s
+
+.PHONY : include/Efficiencies/Trigger.s
+
+# target to generate assembly for a file
+include/Efficiencies/Trigger.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/selectEv.dir/build.make CMakeFiles/selectEv.dir/include/Efficiencies/Trigger.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/include/Efficiencies/Trigger.cpp.s
+.PHONY : include/Efficiencies/Trigger.cpp.s
+
+include/Templates/BuildTemplatesSel.o: include/Templates/BuildTemplatesSel.cpp.o
+
+.PHONY : include/Templates/BuildTemplatesSel.o
+
+# target to build an object file
+include/Templates/BuildTemplatesSel.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/include/Templates/BuildTemplatesSel.cpp.o
+.PHONY : include/Templates/BuildTemplatesSel.cpp.o
+
+include/Templates/BuildTemplatesSel.i: include/Templates/BuildTemplatesSel.cpp.i
+
+.PHONY : include/Templates/BuildTemplatesSel.i
+
+# target to preprocess a source file
+include/Templates/BuildTemplatesSel.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/include/Templates/BuildTemplatesSel.cpp.i
+.PHONY : include/Templates/BuildTemplatesSel.cpp.i
+
+include/Templates/BuildTemplatesSel.s: include/Templates/BuildTemplatesSel.cpp.s
+
+.PHONY : include/Templates/BuildTemplatesSel.s
+
+# target to generate assembly for a file
+include/Templates/BuildTemplatesSel.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/include/Templates/BuildTemplatesSel.cpp.s
+.PHONY : include/Templates/BuildTemplatesSel.cpp.s
+
+src/BuildFlux.o: src/BuildFlux.cpp.o
+
+.PHONY : src/BuildFlux.o
+
+# target to build an object file
+src/BuildFlux.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BuildFlux.dir/build.make CMakeFiles/BuildFlux.dir/src/BuildFlux.cpp.o
+.PHONY : src/BuildFlux.cpp.o
+
+src/BuildFlux.i: src/BuildFlux.cpp.i
+
+.PHONY : src/BuildFlux.i
+
+# target to preprocess a source file
+src/BuildFlux.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BuildFlux.dir/build.make CMakeFiles/BuildFlux.dir/src/BuildFlux.cpp.i
+.PHONY : src/BuildFlux.cpp.i
+
+src/BuildFlux.s: src/BuildFlux.cpp.s
+
+.PHONY : src/BuildFlux.s
+
+# target to generate assembly for a file
+src/BuildFlux.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BuildFlux.dir/build.make CMakeFiles/BuildFlux.dir/src/BuildFlux.cpp.s
+.PHONY : src/BuildFlux.cpp.s
+
+src/CompareEff.o: src/CompareEff.cpp.o
+
+.PHONY : src/CompareEff.o
+
+# target to build an object file
+src/CompareEff.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/CompareEff.dir/build.make CMakeFiles/CompareEff.dir/src/CompareEff.cpp.o
+.PHONY : src/CompareEff.cpp.o
+
+src/CompareEff.i: src/CompareEff.cpp.i
+
+.PHONY : src/CompareEff.i
+
+# target to preprocess a source file
+src/CompareEff.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/CompareEff.dir/build.make CMakeFiles/CompareEff.dir/src/CompareEff.cpp.i
+.PHONY : src/CompareEff.cpp.i
+
+src/CompareEff.s: src/CompareEff.cpp.s
+
+.PHONY : src/CompareEff.s
+
+# target to generate assembly for a file
+src/CompareEff.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/CompareEff.dir/build.make CMakeFiles/CompareEff.dir/src/CompareEff.cpp.s
+.PHONY : src/CompareEff.cpp.s
+
+src/CompareFlux.o: src/CompareFlux.cpp.o
+
+.PHONY : src/CompareFlux.o
+
+# target to build an object file
+src/CompareFlux.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/CompareFlux.dir/build.make CMakeFiles/CompareFlux.dir/src/CompareFlux.cpp.o
+.PHONY : src/CompareFlux.cpp.o
+
+src/CompareFlux.i: src/CompareFlux.cpp.i
+
+.PHONY : src/CompareFlux.i
+
+# target to preprocess a source file
+src/CompareFlux.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/CompareFlux.dir/build.make CMakeFiles/CompareFlux.dir/src/CompareFlux.cpp.i
+.PHONY : src/CompareFlux.cpp.i
+
+src/CompareFlux.s: src/CompareFlux.cpp.s
+
+.PHONY : src/CompareFlux.s
+
+# target to generate assembly for a file
+src/CompareFlux.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/CompareFlux.dir/build.make CMakeFiles/CompareFlux.dir/src/CompareFlux.cpp.s
+.PHONY : src/CompareFlux.cpp.s
+
+src/CreateTemplatesBelowL1.o: src/CreateTemplatesBelowL1.cpp.o
+
+.PHONY : src/CreateTemplatesBelowL1.o
+
+# target to build an object file
+src/CreateTemplatesBelowL1.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/CreateTemplatesBelowL1.dir/build.make CMakeFiles/CreateTemplatesBelowL1.dir/src/CreateTemplatesBelowL1.cpp.o
+.PHONY : src/CreateTemplatesBelowL1.cpp.o
+
+src/CreateTemplatesBelowL1.i: src/CreateTemplatesBelowL1.cpp.i
+
+.PHONY : src/CreateTemplatesBelowL1.i
+
+# target to preprocess a source file
+src/CreateTemplatesBelowL1.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/CreateTemplatesBelowL1.dir/build.make CMakeFiles/CreateTemplatesBelowL1.dir/src/CreateTemplatesBelowL1.cpp.i
+.PHONY : src/CreateTemplatesBelowL1.cpp.i
+
+src/CreateTemplatesBelowL1.s: src/CreateTemplatesBelowL1.cpp.s
+
+.PHONY : src/CreateTemplatesBelowL1.s
+
+# target to generate assembly for a file
+src/CreateTemplatesBelowL1.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/CreateTemplatesBelowL1.dir/build.make CMakeFiles/CreateTemplatesBelowL1.dir/src/CreateTemplatesBelowL1.cpp.s
+.PHONY : src/CreateTemplatesBelowL1.cpp.s
 
 src/checkVar.o: src/checkVar.cpp.o
 
@@ -235,6 +671,60 @@ src/eff.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/eff.dir/build.make CMakeFiles/eff.dir/src/eff.cpp.s
 .PHONY : src/eff.cpp.s
 
+src/fitTemplates.o: src/fitTemplates.cpp.o
+
+.PHONY : src/fitTemplates.o
+
+# target to build an object file
+src/fitTemplates.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fitTemplates.dir/build.make CMakeFiles/fitTemplates.dir/src/fitTemplates.cpp.o
+.PHONY : src/fitTemplates.cpp.o
+
+src/fitTemplates.i: src/fitTemplates.cpp.i
+
+.PHONY : src/fitTemplates.i
+
+# target to preprocess a source file
+src/fitTemplates.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fitTemplates.dir/build.make CMakeFiles/fitTemplates.dir/src/fitTemplates.cpp.i
+.PHONY : src/fitTemplates.cpp.i
+
+src/fitTemplates.s: src/fitTemplates.cpp.s
+
+.PHONY : src/fitTemplates.s
+
+# target to generate assembly for a file
+src/fitTemplates.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fitTemplates.dir/build.make CMakeFiles/fitTemplates.dir/src/fitTemplates.cpp.s
+.PHONY : src/fitTemplates.cpp.s
+
+src/fragmentation.o: src/fragmentation.cpp.o
+
+.PHONY : src/fragmentation.o
+
+# target to build an object file
+src/fragmentation.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/src/fragmentation.cpp.o
+.PHONY : src/fragmentation.cpp.o
+
+src/fragmentation.i: src/fragmentation.cpp.i
+
+.PHONY : src/fragmentation.i
+
+# target to preprocess a source file
+src/fragmentation.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/src/fragmentation.cpp.i
+.PHONY : src/fragmentation.cpp.i
+
+src/fragmentation.s: src/fragmentation.cpp.s
+
+.PHONY : src/fragmentation.s
+
+# target to generate assembly for a file
+src/fragmentation.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fragmentation.dir/build.make CMakeFiles/fragmentation.dir/src/fragmentation.cpp.s
+.PHONY : src/fragmentation.cpp.s
+
 src/hplot.o: src/hplot.cpp.o
 
 .PHONY : src/hplot.o
@@ -261,6 +751,33 @@ src/hplot.s: src/hplot.cpp.s
 src/hplot.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/hplot.dir/build.make CMakeFiles/hplot.dir/src/hplot.cpp.s
 .PHONY : src/hplot.cpp.s
+
+src/printEverything.o: src/printEverything.cpp.o
+
+.PHONY : src/printEverything.o
+
+# target to build an object file
+src/printEverything.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/printEverything.dir/build.make CMakeFiles/printEverything.dir/src/printEverything.cpp.o
+.PHONY : src/printEverything.cpp.o
+
+src/printEverything.i: src/printEverything.cpp.i
+
+.PHONY : src/printEverything.i
+
+# target to preprocess a source file
+src/printEverything.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/printEverything.dir/build.make CMakeFiles/printEverything.dir/src/printEverything.cpp.i
+.PHONY : src/printEverything.cpp.i
+
+src/printEverything.s: src/printEverything.cpp.s
+
+.PHONY : src/printEverything.s
+
+# target to generate assembly for a file
+src/printEverything.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/printEverything.dir/build.make CMakeFiles/printEverything.dir/src/printEverything.cpp.s
+.PHONY : src/printEverything.cpp.s
 
 src/selectEv.o: src/selectEv.cpp.o
 
@@ -297,19 +814,71 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... BuildFlux"
+	@echo "... CompareEff"
+	@echo "... CompareFlux"
+	@echo "... CreateTemplatesBelowL1"
 	@echo "... checkVar"
 	@echo "... eff"
+	@echo "... fitTemplates"
+	@echo "... fragmentation"
 	@echo "... hplot"
+	@echo "... printEverything"
 	@echo "... selectEv"
+	@echo "... include/Efficiencies/InnerTracker.o"
+	@echo "... include/Efficiencies/InnerTracker.i"
+	@echo "... include/Efficiencies/InnerTracker.s"
+	@echo "... include/Efficiencies/MySel.o"
+	@echo "... include/Efficiencies/MySel.i"
+	@echo "... include/Efficiencies/MySel.s"
+	@echo "... include/Efficiencies/RTI.o"
+	@echo "... include/Efficiencies/RTI.i"
+	@echo "... include/Efficiencies/RTI.s"
+	@echo "... include/Efficiencies/TRD.o"
+	@echo "... include/Efficiencies/TRD.i"
+	@echo "... include/Efficiencies/TRD.s"
+	@echo "... include/Efficiencies/TofStandalone.o"
+	@echo "... include/Efficiencies/TofStandalone.i"
+	@echo "... include/Efficiencies/TofStandalone.s"
+	@echo "... include/Efficiencies/Tracker.o"
+	@echo "... include/Efficiencies/Tracker.i"
+	@echo "... include/Efficiencies/Tracker.s"
+	@echo "... include/Efficiencies/Trigger.o"
+	@echo "... include/Efficiencies/Trigger.i"
+	@echo "... include/Efficiencies/Trigger.s"
+	@echo "... include/Templates/BuildTemplatesSel.o"
+	@echo "... include/Templates/BuildTemplatesSel.i"
+	@echo "... include/Templates/BuildTemplatesSel.s"
+	@echo "... src/BuildFlux.o"
+	@echo "... src/BuildFlux.i"
+	@echo "... src/BuildFlux.s"
+	@echo "... src/CompareEff.o"
+	@echo "... src/CompareEff.i"
+	@echo "... src/CompareEff.s"
+	@echo "... src/CompareFlux.o"
+	@echo "... src/CompareFlux.i"
+	@echo "... src/CompareFlux.s"
+	@echo "... src/CreateTemplatesBelowL1.o"
+	@echo "... src/CreateTemplatesBelowL1.i"
+	@echo "... src/CreateTemplatesBelowL1.s"
 	@echo "... src/checkVar.o"
 	@echo "... src/checkVar.i"
 	@echo "... src/checkVar.s"
 	@echo "... src/eff.o"
 	@echo "... src/eff.i"
 	@echo "... src/eff.s"
+	@echo "... src/fitTemplates.o"
+	@echo "... src/fitTemplates.i"
+	@echo "... src/fitTemplates.s"
+	@echo "... src/fragmentation.o"
+	@echo "... src/fragmentation.i"
+	@echo "... src/fragmentation.s"
 	@echo "... src/hplot.o"
 	@echo "... src/hplot.i"
 	@echo "... src/hplot.s"
+	@echo "... src/printEverything.o"
+	@echo "... src/printEverything.i"
+	@echo "... src/printEverything.s"
 	@echo "... src/selectEv.o"
 	@echo "... src/selectEv.i"
 	@echo "... src/selectEv.s"

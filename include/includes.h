@@ -10,6 +10,7 @@
 #include <TH1D.h>
 #include <TH2D.h>
 #include <TGraphErrors.h>
+#include <TGraphAsymmErrors.h>
 #include <TStyle.h>
 #include <TChain.h>
 #include <TMath.h>
@@ -24,8 +25,11 @@
 #include "TKey.h"
 #include <TROOT.h>
 #include <TSystem.h>
+#include <TLegend.h>
+
 #include <string>
 #include <vector>
+
 
 #include "Efficiencies/Tracker.h"
 #include "Efficiencies/Trigger.h"
@@ -34,4 +38,5 @@
 #include "Efficiencies/RTI.h"
 #include "Efficiencies/MySel.h"
 #include "Efficiencies/TRD.h"
+#include "Templates/BuildTemplatesSel.h"
 #endif

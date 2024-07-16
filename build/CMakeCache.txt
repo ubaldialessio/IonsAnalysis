@@ -137,7 +137,7 @@ CMAKE_INSTALL_MANDIR:PATH=
 CMAKE_INSTALL_OLDINCLUDEDIR:PATH=/usr/include
 
 //Install path prefix, prepended onto install directories.
-CMAKE_INSTALL_PREFIX:PATH=/usr/local
+CMAKE_INSTALL_PREFIX:PATH=/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis
 
 //Run-time variable data (LOCALSTATEDIR/run)
 CMAKE_INSTALL_RUNSTATEDIR:PATH=
@@ -193,7 +193,7 @@ CMAKE_PROJECT_DESCRIPTION:STATIC=
 CMAKE_PROJECT_HOMEPAGE_URL:STATIC=
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=checkVar
+CMAKE_PROJECT_NAME:STATIC=IonsAnalysis
 
 //Path to a program.
 CMAKE_RANLIB:FILEPATH=/cvmfs/sft.cern.ch/lcg/releases/binutils/2.34-990b2/x86_64-centos7/bin/ranlib
@@ -257,11 +257,20 @@ CMAKE_STRIP:FILEPATH=/cvmfs/sft.cern.ch/lcg/releases/binutils/2.34-990b2/x86_64-
 // Studio IDE projects all commands are done without /nologo.
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
+//Value Computed by CMake
+IonsAnalysis_BINARY_DIR:STATIC=/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/build
+
+//Value Computed by CMake
+IonsAnalysis_SOURCE_DIR:STATIC=/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis
+
 //No help, variable specified on the command line.
-NAIA_DIR:UNINITIALIZED=/cvmfs/ams.cern.ch/Offline/amsitaly/public/install/x86_64-centos7-gcc9.3/naia/v1.0.2/cmake
+NAIA_DIR:UNINITIALIZED=/cvmfs/ams.cern.ch/Offline/amsitaly/public/install/x86_64-centos7-gcc9.3/naia/v1.0.3/cmake
 
 //No help, variable specified on the command line.
 NSL_DIR:UNINITIALIZED=/storage/gpfs_ams/ams/users/aubaldi/nsl.install/cmake
+
+//The directory containing a CMake configuration file for ROOFIT.
+ROOFIT_DIR:PATH=ROOFIT_DIR-NOTFOUND
 
 //Path to a library.
 ROOT_Core_LIBRARY:FILEPATH=/cvmfs/ams.cern.ch/Offline/amsitaly/public/install/x86_64-centos7-gcc9.3/root-6.26.02/lib/libCore.so
@@ -313,6 +322,15 @@ ROOT_ROOTVecOps_LIBRARY:FILEPATH=/cvmfs/ams.cern.ch/Offline/amsitaly/public/inst
 
 //Path to a library.
 ROOT_Rint_LIBRARY:FILEPATH=/cvmfs/ams.cern.ch/Offline/amsitaly/public/install/x86_64-centos7-gcc9.3/root-6.26.02/lib/libRint.so
+
+//Path to a library.
+ROOT_RooFitCore_LIBRARY:FILEPATH=/cvmfs/ams.cern.ch/Offline/amsitaly/public/install/x86_64-centos7-gcc9.3/root-6.26.02/lib/libRooFitCore.so
+
+//Path to a library.
+ROOT_RooFit_LIBRARY:FILEPATH=/cvmfs/ams.cern.ch/Offline/amsitaly/public/install/x86_64-centos7-gcc9.3/root-6.26.02/lib/libRooFit.so
+
+//Path to a library.
+ROOT_RooStats_LIBRARY:FILEPATH=/cvmfs/ams.cern.ch/Offline/amsitaly/public/install/x86_64-centos7-gcc9.3/root-6.26.02/lib/libRooStats.so
 
 //Path to a library.
 ROOT_Thread_LIBRARY:FILEPATH=/cvmfs/ams.cern.ch/Offline/amsitaly/public/install/x86_64-centos7-gcc9.3/root-6.26.02/lib/libThread.so
@@ -564,6 +582,8 @@ CMAKE_STRIP-ADVANCED:INTERNAL=1
 CMAKE_UNAME:INTERNAL=/bin/uname
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
+//Details about finding Python3
+FIND_PACKAGE_MESSAGE_DETAILS_Python3:INTERNAL=[/cvmfs/sft.cern.ch/lcg/releases/Python/3.9.12-9a1bc/x86_64-centos7-gcc9-opt/bin/python3.9][cfound components: Interpreter ][v3.9.12()]
 //Details about finding Threads
 FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
 //ADVANCED property for variable: ROOT_Core_LIBRARY
@@ -598,6 +618,12 @@ ROOT_ROOTDataFrame_LIBRARY-ADVANCED:INTERNAL=1
 ROOT_ROOTVecOps_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: ROOT_Rint_LIBRARY
 ROOT_Rint_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: ROOT_RooFitCore_LIBRARY
+ROOT_RooFitCore_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: ROOT_RooFit_LIBRARY
+ROOT_RooFit_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: ROOT_RooStats_LIBRARY
+ROOT_RooStats_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: ROOT_Thread_LIBRARY
 ROOT_Thread_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: ROOT_TreePlayer_LIBRARY
@@ -627,5 +653,10 @@ ROOT_rootmv_CMD-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: ROOT_rootrm_CMD
 ROOT_rootrm_CMD-ADVANCED:INTERNAL=1
 //CMAKE_INSTALL_PREFIX during last run
-_GNUInstallDirs_LAST_CMAKE_INSTALL_PREFIX:INTERNAL=/usr/local
+_GNUInstallDirs_LAST_CMAKE_INSTALL_PREFIX:INTERNAL=/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis
+//Path to a program.
+_Python3_EXECUTABLE:INTERNAL=/cvmfs/sft.cern.ch/lcg/releases/Python/3.9.12-9a1bc/x86_64-centos7-gcc9-opt/bin/python3.9
+//Python3 Properties
+_Python3_INTERPRETER_PROPERTIES:INTERNAL=Python;3;9;12;64;;cpython-39-x86_64-linux-gnu;/cvmfs/sft.cern.ch/lcg/releases/Python/3.9.12-9a1bc/x86_64-centos7-gcc9-opt/lib/python3.9;/cvmfs/sft.cern.ch/lcg/releases/Python/3.9.12-9a1bc/x86_64-centos7-gcc9-opt/lib/python3.9;/cvmfs/sft.cern.ch/lcg/releases/Python/3.9.12-9a1bc/x86_64-centos7-gcc9-opt/lib/python3.9/site-packages;/cvmfs/sft.cern.ch/lcg/releases/Python/3.9.12-9a1bc/x86_64-centos7-gcc9-opt/lib/python3.9/site-packages
+_Python3_INTERPRETER_SIGNATURE:INTERNAL=852fb059058782aa5cc3bebb748fdad3
 

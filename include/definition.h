@@ -9,6 +9,7 @@ float inf = 9999999;
 
 
 auto CRT = NAIA::TrTrack::ChargeRecoType::YJ;
+auto STD = NAIA::TrTrack::ChargeRecoType::STD;
 auto FIT = NAIA::TrTrack::Fit::GBL;
 auto INN = NAIA::TrTrack::Span::InnerOnly;
 auto IL1 = NAIA::TrTrack::Span::InnerL1;
@@ -43,10 +44,10 @@ short bitcounter(short n) {
   else return (n&1)+bitcounter(n>>1);
 }
 
-namespace trig 			= Efficiency::TriggerEff;
-namespace track 		= Efficiency::TrTrackEffSel;
-namespace InnerTracker  = Efficiency::InnerTracker;
-namespace TofSt 		= Efficiency::TofStandalone;
-namespace MySel 	    = Efficiency::MySel;
-namespace trd 		    = Efficiency::trd;
+namespace trig 				= Efficiency::TriggerEff;
+namespace track 			= Efficiency::TrTrackEffSel;
+namespace InnerTracker  	= Efficiency::InnerTracker;
+namespace TofSt 			= Efficiency::TofStandalone;
+namespace MySel 	    	= Efficiency::MySel;
+namespace trd 		    	= Efficiency::trd;
 #endif

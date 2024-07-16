@@ -48,11 +48,11 @@ void niceth1(TH1 *h, TString name, TString opt, unsigned int charge) {
 	if (name.Contains("d_")) {
 		h->SetMarkerStyle(8);
 		if (name.Contains("trig")) {
-			h->GetYaxis()->SetRangeUser(0.90,1);
+			h->GetYaxis()->SetRangeUser(0.5,1);
 			h->SetTitle(TriggerEff.Data() );
 			h->GetXaxis()->SetRangeUser(0,1000);
 		} else if (name.Contains("l1")) {
-			h->GetYaxis()->SetRangeUser(0.6,0.9);
+			h->GetYaxis()->SetRangeUser(0.64,0.99);
 			h->SetTitle(L1Eff.Data() );
 			h->GetXaxis()->SetRangeUser(0,100);
 		} else if (name.Contains("tof")) {
@@ -60,7 +60,7 @@ void niceth1(TH1 *h, TString name, TString opt, unsigned int charge) {
 			h->SetTitle(TofEff.Data() );
 			h->GetXaxis()->SetRangeUser(0,1000);
 		} else if (name.Contains("tr") && !name.Contains("ig") ) {
-			h->GetYaxis()->SetRangeUser(0.7,0.9);
+			h->GetYaxis()->SetRangeUser(0.3,0.99);
 			h->SetTitle(TrackEff.Data() );
 			h->GetXaxis()->SetRangeUser(0,30);
 		}
@@ -68,7 +68,7 @@ void niceth1(TH1 *h, TString name, TString opt, unsigned int charge) {
 	if (name.Contains("m_")) {
 		h->SetMarkerStyle(32);
 		if (name.Contains("trig")) {
-			h->GetYaxis()->SetRangeUser(0.95,1);
+			h->GetYaxis()->SetRangeUser(0.5,1);
 			h->SetTitle(TriggerEff.Data() );
 			h->GetXaxis()->SetRangeUser(0,1000);
 		} else if (name.Contains("l1")) {
@@ -80,7 +80,7 @@ void niceth1(TH1 *h, TString name, TString opt, unsigned int charge) {
 			h->SetTitle(TofEff.Data() );
 			h->GetXaxis()->SetRangeUser(0,1000);
 		} else if (name.Contains("tr") && !name.Contains("ig") ) {
-			h->GetYaxis()->SetRangeUser(0.7,0.9);
+			h->GetYaxis()->SetRangeUser(0.1,0.99);
 			h->SetTitle(TrackEff.Data() );
 			h->GetXaxis()->SetRangeUser(0,30);
 		}

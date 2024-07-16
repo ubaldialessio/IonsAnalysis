@@ -4,7 +4,7 @@
 # compile CXX with /cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/bin/g++
 CXX_DEFINES = -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DVECCORE_ENABLE_VC
 
-CXX_INCLUDES = -I/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/include -isystem /cvmfs/ams.cern.ch/Offline/amsitaly/public/install/x86_64-centos7-gcc9.3/naia/v1.0.2/include -isystem /cvmfs/ams.cern.ch/Offline/amsitaly/public/install/x86_64-centos7-gcc9.3/root-6.26.02/include -isystem /storage/gpfs_ams/ams/users/aubaldi/nsl.install/include
+CXX_INCLUDES = -I/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/include -isystem /cvmfs/ams.cern.ch/Offline/amsitaly/public/install/x86_64-centos7-gcc9.3/root-6.26.02/include -isystem /cvmfs/ams.cern.ch/Offline/amsitaly/public/install/x86_64-centos7-gcc9.3/naia/v1.0.3/include -isystem /cvmfs/ams.cern.ch/Offline/amsitaly/public/install/x86_64-centos7-gcc9.3/naia/v1.0.2/include -isystem /storage/gpfs_ams/ams/users/aubaldi/nsl.install/include
 
-CXX_FLAGS = -std=gnu++17
+CXX_FLAGS = -std=gnu++14
 
