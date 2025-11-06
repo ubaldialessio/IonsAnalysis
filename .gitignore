@@ -1,0 +1,87 @@
+# =============================
+# Build / Compilation Files
+# =============================
+*.o
+*.so
+*.a
+*.out
+*.exe
+*.d
+*.obj
+*.dll
+*.lib
+
+# =============================
+# ROOT and Analysis Outputs
+# =============================
+*.root
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.eps
+*.gif
+*.dat
+*.csv
+*.npz
+*.npy
+
+# ROOT metadata and build files
+*.pcm
+*.rootmap
+
+# =============================
+# Logs, Temp, Cache
+# =============================
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+*~
+.cache/
+*.lock
+
+# =============================
+# CMake and Build System
+# =============================
+build/
+cmake-build*/
+CMakeFiles/
+CMakeCache.txt
+Makefile
+install_manifest.txt
+compile_commands.json
+Testing/
+CTestTestfile.cmake
+*.ninja
+.ninja_log
+.ninja_deps
+
+# =============================
+# Python (if used)
+# =============================
+__pycache__/
+*.pyc
+*.pyo
+
+# =============================
+# IDE / Editor / Env
+# =============================
+.vscode/
+.idea/
+*.code-workspace
+
+# =============================
+# Virtual Environments
+# =============================
+.venv/
+venv/
+.env
+.envrc
+
+# =============================
+# macOS / Linux metadata
+# =============================
+.DS_Store
+Thumbs.db
