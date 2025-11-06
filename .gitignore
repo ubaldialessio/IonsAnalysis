@@ -25,6 +25,8 @@
 *.csv
 *.npz
 *.npy
+*.txt~
+*.bak~
 
 # ROOT metadata and build files
 *.pcm
@@ -64,6 +66,8 @@ CTestTestfile.cmake
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
+*.ipynb_checkpoints/
 
 # =============================
 # IDE / Editor / Env
