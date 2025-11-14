@@ -629,11 +629,11 @@ if (rigmap=="rigmap") {
             if( den_ltof_l9Unb_1.passed & (1<<12)) pass_tkch_mc->Fill(den_ltof_l9Unb_1.reco_il1, w);   
           } std::cout << std::endl;
   //------Reweigh mc track using rigidity map
-          if (rigmap=="rigmap" && iter==0) {
+          /*if (rigmap=="rigmap" && iter==0) {
             printf("\n[INFO] Reweighing track mc with rigidity map.. \n");
             RigidityMap(charge,samp_tk_mc);
             RigidityMap(charge,pass_tk_mc);
-          }
+          }*/
           std::cout << "[DEBUG] pass_l1_mc directory: " << pass_l1_mc->GetDirectory() << std::endl;
           outfile->WriteTObject(mc_pass, Form("mc_pass_it%i",iter) );
           outfile->WriteTObject(mc_pass_gen, Form("mc_pass_gen_it%i",iter) );
@@ -863,28 +863,71 @@ double integrate(const TF1* fun, double min, double max) {
   return integral;
 }
 void RigidityMap(unsigned int charge, TH1D *h) {
-  //apri file e prendi rigamp
-  TFile *file = new TFile("../IonsSelected/"+getIonPath(charge)+"/RigidityMap/rigmap.root" );
-  auto rigmap = (TH2D*)file->Get("map_normalized");
-  if (!rigmap) std::cerr << "Map not found" <<std::endl;
-  //itera sugli eventi di h
-  for (int i=1; i<=h->GetNbinsX(); i++) {
-    //per ogni evento prendi rigidità rig (indice i) e content
-    double content = h->GetBinContent(i);
-    double r_low = h->GetBinLowEdge(h->GetBinCenter(i));
-    //per ogni rigidità (indice i), fai la proiezione del bin della mappa dove cade 
-    if (content!=0) {
-      auto proj = rigmap->ProjectionY("proj",r_low,i);
-      // prendi la media
-      double mean = proj->GetMean();
-      // assegna lo stesso bin content alla nuova rigidità
-      h->SetBinContent(h->GetBinCenter(mean),content);
-      delete proj;
+  // Apri file e prendi la mappa
+  TFile *file = new TFile("../IonsSelected/" + getIonPath(charge) + "/RigidityMap/rigmap.root");
+  auto rigmap = (TH2D*)file->Get("map");
+  if (!rigmap) {
+    std::cerr << "Map not found" << std::endl;
+    return;
+  }
+
+  // Dividi ogni bin per la bin width dell’asse Y
+  for (int ix = 1; ix <= rigmap->GetNbinsX(); ++ix) {
+    for (int iy = 1; iy <= rigmap->GetNbinsY(); ++iy) {
+      double content = rigmap->GetBinContent(ix, iy);
+      double error   = rigmap->GetBinError(ix, iy);
+      double widthY  = rigmap->GetYaxis()->GetBinWidth(iy);
+
+      if (widthY > 0) {
+        rigmap->SetBinContent(ix, iy, content / widthY);
+        rigmap->SetBinError(ix, iy, error / widthY);
+      }
     }
   }
+
+  // Istogramma temporaneo per la versione corretta di h
+  auto hshifted = (TH1D*)h->Clone("hshifted");
+  hshifted->Reset();
+
+  // Itera solo sui bin con rigidità 5 < R <= 30
+  for (int ix = 1; ix <= h->GetNbinsX(); ++ix) {
+    double R = h->GetBinCenter(ix);
+    if (R <= 5.0 || R > 30.0) {
+        hshifted->SetBinContent(ix, h->GetBinContent(ix));
+        hshifted->SetBinError(ix, h->GetBinError(ix));
+        continue;
+    }
+
+    double content = h->GetBinContent(ix);
+    if (content == 0) continue;
+
+    // Proiezione in Y per il bin X corrente della mappa
+    auto proj = rigmap->ProjectionY("proj", ix, ix);
+    if (!proj || proj->GetEntries() == 0) { delete proj; continue; }
+
+    // Trova la moda: bin di Y con contenuto massimo
+    int maxBinY = proj->GetMaximumBin();
+    double modeY = proj->GetBinCenter(maxBinY);
+    delete proj;
+
+    // Trova il bin corrispondente alla moda in Y
+    int newBin = hshifted->FindBin(modeY);
+    if (newBin >= 1 && newBin <= hshifted->GetNbinsX()) {
+      hshifted->SetBinContent(newBin, content);
+      hshifted->SetBinError(newBin, h->GetBinError(ix));
+    }
+  }
+
+  // Aggiorna h con la versione corretta
+  h->Reset();
+  h->Add(hshifted);
+
+  delete hshifted;
   delete rigmap;
   delete file;
 }
+
+
 int getEntriesBySample(int sampleNum, TTree *t1, TTree *t2, TTree *t3, TTree *t4) {
   int a =1;
   switch(sampleNum) {
