@@ -173,7 +173,7 @@ TH1D *LoadToi(unsigned int charge,TString inp_sec_track, TString ACC, TString nu
         auto fragm  = (TH1D*)aboveFile->Get( Form("fraction_spline_tot%s",ACC.Data()) );
         return fragm;
     } else {
-        auto fragm  = (TH1D*)aboveFile->Get( Form("single_spline_cont_%s_%s",nucleus.Data(),ACC.Data()) );
+        auto fragm  = (TH1D*)aboveFile->Get( Form("single_spline_%s_%s",nucleus.Data(),ACC.Data()) );
         return fragm; 
     }
 }
@@ -191,6 +191,40 @@ TH1D *LoadL1ChargeCut(unsigned int charge, TString timePeriod, TString inp_sec_t
     TH1D *l1ch = (TH1D*)file->Get("final_l1ch");
     return l1ch;
 }
+TTree *LoadTree(unsigned int charge, TString inp_sec_track, TString ACC, TString nucleus) {
+    TString above = Form("./../IonsSelected/%s/Fragments/%s.B1236.root",
+                         getIonPath(charge).Data(), nucleus.Data());
+    std::cout << "Getting tree from file " << above.Data() << std::endl;
+
+    TFile *aboveFile = TFile::Open(above.Data(), "READ");
+    if (!aboveFile || aboveFile->IsZombie()) {
+        std::cerr << "Error opening file " << above << std::endl;
+        return nullptr;
+    }
+
+    TTree *sourceTree = (TTree*)aboveFile->Get(Form("events_%s", ACC.Data()));
+    if (!sourceTree) {
+        std::cerr << "Error: cannot find TTree events_" << ACC << std::endl;
+        aboveFile->Close();
+        delete aboveFile;
+        return nullptr;
+    }
+
+    // ✅ Carichiamo almeno un evento (forza i basket)
+    sourceTree->GetEntry(0);
+
+    // ✅ Copiamo tutto in memoria
+    TTree *ttree = sourceTree->CopyTree("");
+    ttree->SetDirectory(nullptr);
+
+    aboveFile->Close();
+    delete aboveFile;
+
+    return ttree;
+}
+
+
+
 
 
 int main(int argc, char *argv[]) {
@@ -203,7 +237,7 @@ int main(int argc, char *argv[]) {
     TString timePeriod = argv[2];
     TString sec_track = argv[3];
     TString inp_sec_track;
-    sec_track == "y" ? inp_sec_track = "_sec_track_" : "_";
+    sec_track == "y" ? inp_sec_track = "_sec_track_" : "";
     TString out = StreamUtility::getOutputDir(charge,argv[0],getIonName(charge)+
                   Form("_FluxForJack%s_%s.root",inp_sec_track.Data(),timePeriod.Data()) );
     TFile *f = new TFile(out.Data(),"RECREATE");
@@ -232,23 +266,29 @@ int main(int argc, char *argv[]) {
     auto toi_acc7      = LoadToi(charge,inp_sec_track,"acc7","fraction");
     f->WriteTObject(toi_acc7, Form("Z%d_al1_total_acc7",charge) );
 
-    auto toi_S_acc4      = LoadToi(charge,inp_sec_track,"acc4","Cl");
-    f->WriteTObject(toi_S_acc4, Form("Z%d_al1_chlorine_acc4",charge) );
+    auto toi_S_acc4      = LoadToi(charge,inp_sec_track,"acc4","S");
+    f->WriteTObject(toi_S_acc4, Form("Z%d_al1_sulfur_acc4",charge) );
 
-    auto toi_S_acc7      = LoadToi(charge,inp_sec_track,"acc7","Cl");
-    f->WriteTObject(toi_S_acc7, Form("Z%d_al1_chlorine_acc7",charge) );
-    
-    auto toi_S_acc_acc4 = LoadToiAcceptance(charge,inp_sec_track,"acc4","Cl");
-    f->WriteTObject(toi_S_acc_acc4, Form("Z17_to_Z16_acceptance_acc4") );
+    auto toi_S_acc7      = LoadToi(charge,inp_sec_track,"acc7","S");
+    f->WriteTObject(toi_S_acc7, Form("Z%d_al1_sulfur_acc7",charge) );
 
-    auto toi_S_acc_acc7 = LoadToiAcceptance(charge,inp_sec_track,"acc7","Cl");
-    f->WriteTObject(toi_S_acc_acc7, Form("Z17_to_Z16_acceptance_acc7") );
+    auto toi_Fe_acc4      = LoadToi(charge,inp_sec_track,"acc4","Fe");
+    f->WriteTObject(toi_Fe_acc4, Form("Z%d_al1_iron_acc4",charge) );
+
+    auto toi_Fe_acc7      = LoadToi(charge,inp_sec_track,"acc7","Fe");
+    f->WriteTObject(toi_Fe_acc7, Form("Z%d_al1_iron_acc7",charge) );
+     
+    auto toi_S_acc_acc4 = LoadToiAcceptance(charge,inp_sec_track,"acc4","S");
+    f->WriteTObject(toi_S_acc_acc4, Form("Z16_to_Z15_acceptance_acc4") );
+
+    auto toi_S_acc_acc7 = LoadToiAcceptance(charge,inp_sec_track,"acc7","S");
+    f->WriteTObject(toi_S_acc_acc7, Form("Z16_to_Z15_acceptance_acc7") );
 
     auto toi_Fe_acc_acc4 = LoadToiAcceptance(charge,inp_sec_track,"acc4","Fe");
-    f->WriteTObject(toi_Fe_acc_acc4, Form("Z26_to_Z16_acceptance_acc4") );
+    f->WriteTObject(toi_Fe_acc_acc4, Form("Z26_to_Z15_acceptance_acc4") );
 
     auto toi_Fe_acc_acc7 = LoadToiAcceptance(charge,inp_sec_track,"acc7","Fe");
-    f->WriteTObject(toi_Fe_acc_acc7, Form("Z26_to_Z16_acceptance_acc7") );
+    f->WriteTObject(toi_Fe_acc_acc7, Form("Z26_to_Z15_acceptance_acc7") );
 
     auto purity   = LoadPurity(charge);
     f->WriteTObject(purity, Form("Z%d_bl1_purity",charge) );
@@ -260,5 +300,24 @@ int main(int argc, char *argv[]) {
     f->WriteTObject(unf_fac, Form("Z%d_unfolding_factor",charge) );
 
     f->Close();
+
+    //event and count numbers
+    TString outNumbers_26 = Form("./../IonsSelected/%s/Flux/TOI_26_to_15.root",getIonPath(charge).Data());
+    TString outNumbers_16 = Form("./../IonsSelected/%s/Flux/TOI_16_to_15.root",getIonPath(charge).Data());
+    TFile *f_26 = new TFile(outNumbers_26.Data(),"RECREATE");
+    TFile *f_16 = new TFile(outNumbers_16.Data(),"RECREATE");
+
+    auto tree_S_acc4 = LoadTree(charge,inp_sec_track,"acc4","S");
+    f_16->WriteTObject(tree_S_acc4, Form("events_acc4") );
+    auto tree_S_acc7 = LoadTree(charge,inp_sec_track,"acc7","S");
+    f_16->WriteTObject(tree_S_acc7, Form("events_acc7") );
+
+    auto tree_Fe_acc4 = LoadTree(charge,inp_sec_track,"acc4","Fe");
+    f_26->WriteTObject(tree_Fe_acc4, Form("events_acc4") );
+    auto tree_Fe_acc7 = LoadTree(charge,inp_sec_track,"acc7","Fe");
+    f_26->WriteTObject(tree_Fe_acc7, Form("events_acc7") );
+
+    f_16->Close();
+    f_26->Close();
     return 1;
 }
