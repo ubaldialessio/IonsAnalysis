@@ -77,7 +77,7 @@ inline bool IsInsideFiducial(unsigned int jlayer, NAIA::Event &event);
 
 class InnerFiducialVolume : public NSL::Selection {
 public:
-  InnerFiducialVolume();
+  InnerFiducialVolume(bool applyPattern=true);
 };
 
 class L1FiducialVolume : public NSL::Selection {

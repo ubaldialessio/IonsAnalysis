@@ -239,7 +239,7 @@ TrTrackEffSel::IsInsideInner::IsInsideInner(float margin) {
   });
 }
 
-TrTrackEffSel::InnerFiducialVolume::InnerFiducialVolume() {
+TrTrackEffSel::InnerFiducialVolume::InnerFiducialVolume(bool applyPattern) {
   m_matcher = std::make_shared<NSL::boolMatcher>([=](Event &event) {
     int nhits = 0;
     for (auto layer = 2; layer < 9; layer++)
@@ -247,16 +247,17 @@ TrTrackEffSel::InnerFiducialVolume::InnerFiducialVolume() {
         nhits++;
     if (nhits < 5)
       return false;
-
-    if (!IsInsideFiducial(2, event))
-      return false;
-    if (!(IsInsideFiducial(3, event) || IsInsideFiducial(4, event)))
-      return false;
-    if (!(IsInsideFiducial(5, event) || IsInsideFiducial(6, event)))
-      return false;
-    if (!(IsInsideFiducial(7, event) || IsInsideFiducial(8, event)))
-      return false;
-
+    
+    if (applyPattern==true) {
+      if (!IsInsideFiducial(2, event))
+        return false;
+      if (!(IsInsideFiducial(3, event) || IsInsideFiducial(4, event)))
+        return false;
+      if (!(IsInsideFiducial(5, event) || IsInsideFiducial(6, event)))
+        return false;
+      if (!(IsInsideFiducial(7, event) || IsInsideFiducial(8, event)))
+        return false;
+    }
     return true;
   });
 }
