@@ -234,7 +234,7 @@ auto Den_track(unsigned int charge) {
         track::IsHitPresent(EL1) && 
         track::UnbExtHitChargeStatus(EL1) &&
         track::UnbExtHitChargeInRange(EL1,static_cast<float>(charge),CRT,"qi") &&
-        track::InnerFiducialVolume() &&
+        track::InnerFiducialVolume(false) &&
         track::L1FiducialVolume() &&
         TofSt::tofChi2TimeLessThan(20) && 
         TofSt::tofChi2CooLessThan(20) && 
