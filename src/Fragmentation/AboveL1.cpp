@@ -17,6 +17,8 @@ int main(int argc, char *argv[]) {
 	auto mc_pass_acc4      = (TH1D*)hist_log->Clone("mc_pass_acc4");
     auto mc_pass_gen_acc7  = (TH1D*)hist_log->Clone("mc_pass_gen_acc7");
 	auto mc_pass_acc7      = (TH1D*)hist_log->Clone("mc_pass_acc7");
+    auto events_acc4  = new TTree();
+    auto events_acc7  = new TTree();
 	NAIA::Category cat = NAIA::Category::ChargeGT2_Trk | NAIA::Category::ChargeGT2_Tof;
 
 	if (argc < 4) {
@@ -43,6 +45,13 @@ int main(int argc, char *argv[]) {
 	float reco_il1;
 	double gen;
     unsigned short nAcc_counters = 0;
+    unsigned int runNum=-999, evNum=-999;
+
+    events_acc4->Branch("runNum",&runNum,"runNum/I");
+    events_acc4->Branch("evNum",&evNum,"evNum/I");
+    events_acc7->Branch("runNum",&runNum,"runNum/I");
+    events_acc7->Branch("evNum",&evNum,"evNum/I");
+
 
 	auto mcchain = chain.GetFileInfoTree();
 	auto mcinfo = new NAIA::MCFileInfo();
@@ -64,9 +73,15 @@ int main(int argc, char *argv[]) {
     auto secTrackOnDiagonal = MySel::IsSecondTrackOnDiagonal(FIT,IL1,0.3);
     auto l1ClusterCut = MySel::L1ClusterCutBetween(10,30,YSD,ALL_LAYER);
 
+
     for(Event& event : chain) {
-		utime = event.header->UTCTime;
+        auto header = event.header;
+		utime = header->UTCTime;
+        runNum= header->Run;
+        evNum= header->EventNo;
+
 		gen = event.mcTruthBase->Primary.GetGenMomentum()/event.mcTruthBase->Primary.Z;
+        
 		//Check that the interaction happens only Above L1
 	    bool frag_to_target = false;
         for (const auto &sec : event.mcTruthPlus->Secondaries) {
@@ -106,10 +121,12 @@ int main(int argc, char *argv[]) {
             if (nAcc_counters<=4) {
                 mc_pass_acc4->Fill(reco_il1);
 			    mc_pass_gen_acc4->Fill(gen);
+                events_acc4->Fill();
             }
             if (nAcc_counters<=7) {
                 mc_pass_acc7->Fill(reco_il1);
 			    mc_pass_gen_acc7->Fill(gen);
+                events_acc7->Fill();
             }
 			hRig_IL1->Fill(reco_il1);
 		}
@@ -123,6 +140,8 @@ int main(int argc, char *argv[]) {
     outfile->WriteTObject(mc_pass_acc7, "mc_pass_acc7");
 	outfile->WriteTObject(mc_pass_gen_acc7, "mc_pass_gen_acc7");
 	outfile->WriteTObject(hRig_IL1,"hRig_IL1");
+    outfile->WriteTObject(events_acc4,"events_acc4");
+    outfile->WriteTObject(events_acc7,"events_acc7");
 	outfile->Close();
 }
 
