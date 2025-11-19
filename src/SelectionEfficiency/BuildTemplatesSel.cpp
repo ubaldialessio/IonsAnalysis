@@ -2,6 +2,23 @@
 
 namespace BuildTemplatesSel {
 
+
+static std::unordered_map<unsigned int, float> sigma_map;
+static constexpr float default_sigma = 0.5f;   // fallback
+
+void ChargeSigma::SetSigma(unsigned int Z, float sigma) {
+    sigma_map[Z] = sigma;
+}
+
+float ChargeSigma::GetSigma(unsigned int Z) {
+    auto it = sigma_map.find(Z);
+    if (it != sigma_map.end()) return it->second;
+
+    // fallback
+    return default_sigma;
+}
+
+
 BuildTemplatesSel::HitPattern::HitPattern() {
   m_matcher = std::make_shared<NSL::boolMatcher>([=](Event &event) {
     auto pattern = event.trTrackBase->GetTrackPattern();
@@ -14,13 +31,12 @@ BuildTemplatesSel::HitPattern::HitPattern() {
 }
 // calculate L3-L8 charge and RMS for L2 template selection
 BuildTemplatesSel::L3toL8ChargeSelection::L3toL8ChargeSelection(unsigned int charge,
-                                     NAIA::TrTrack::ChargeRecoType recoType) {
-        float min, max;
-        switch (charge) {
-        default:
-            min = static_cast<float>(charge) - 0.5f;
-            max = static_cast<float>(charge) + 0.5f;
-        }
+                                     NAIA::TrTrack::ChargeRecoType recoType, float n_sigma) {
+        float sigma = BuildTemplatesSel::ChargeSigma::GetSigma(charge);
+        float half = n_sigma * sigma;
+
+        float min = static_cast<float>(charge) - half;
+        float max = static_cast<float>(charge) + half;
         m_matcher = std::make_shared<NSL::boolMatcher>([=](Event &event) {
             // Calculate the average charge (L3-L8), removing the maximum value
             float In_Charge = 0.0f;
@@ -53,14 +69,13 @@ BuildTemplatesSel::L3toL8ChargeSelection::L3toL8ChargeSelection(unsigned int cha
 }
 
 BuildTemplatesSel::InnerTrackerChargeInRange::InnerTrackerChargeInRange(unsigned int charge,
-                                                                        NAIA::TrTrack::ChargeRecoType recoType) {
+                                                                        NAIA::TrTrack::ChargeRecoType recoType, float n_sigma) {
 
-  float min, max;
-  switch (charge) {
-  default:
-    min = static_cast<float>(charge) - 0.3f;
-    max = static_cast<float>(charge) + 0.3f;
-  }
+  float sigma = BuildTemplatesSel::ChargeSigma::GetSigma(charge);
+  float half  = n_sigma * sigma;
+
+  float min = static_cast<float>(charge) - half;
+  float max = static_cast<float>(charge) + half;
 
   m_matcher = std::make_shared<NSL::boolMatcher>([=](Event &event) {
     auto charge = event.trTrackBase->InnerCharge[recoType];
@@ -84,16 +99,14 @@ BuildTemplatesSel::InnerTrackerNtrackLessThan::InnerTrackerNtrackLessThan(float 
 }
 
 BuildTemplatesSel::TrackerLayerChargeInRange::TrackerLayerChargeInRange(unsigned int layer, unsigned int charge,
-                                                                        NAIA::TrTrack::ChargeRecoType recoType) {
-
-  float min, max;
-
+                                                                        NAIA::TrTrack::ChargeRecoType recoType, float n_sigma) {
+  float min=0.5,max=0.5;                                                                    
   if (layer == 1) {
-    switch (charge) {
-    default:
-      min = static_cast<float>(charge) - 0.5f;
-      max = static_cast<float>(charge) + 0.5f;
-    }
+    float sigma = BuildTemplatesSel::ChargeSigma::GetSigma(charge);
+    float half  = n_sigma * sigma;
+
+    min = static_cast<float>(charge) - half;
+    max = static_cast<float>(charge) + half;
   }
 
   m_matcher = std::make_shared<NSL::boolMatcher>([=](Event &event) {
@@ -103,15 +116,14 @@ BuildTemplatesSel::TrackerLayerChargeInRange::TrackerLayerChargeInRange(unsigned
   });
 }
 
-BuildTemplatesSel::TofChargeInRange::TofChargeInRange(unsigned int charge, NAIA::Tof::ChargeType type) {
+BuildTemplatesSel::TofChargeInRange::TofChargeInRange(unsigned int charge, NAIA::Tof::ChargeType type, float n_sigma) {
 
-  float min, max;
+  float sigma = BuildTemplatesSel::ChargeSigma::GetSigma(charge);
+  float half  = n_sigma * sigma;
 
-  switch (charge) {
-  default:
-    min = static_cast<float>(charge) - 0.5f;
-    max = static_cast<float>(charge) + 0.5f;
-  }
+  float min = static_cast<float>(charge) - half;
+  float max = static_cast<float>(charge) + half;
+
 
   m_matcher = std::make_shared<NSL::boolMatcher>([=](Event &event) {
     auto charge = event.tofBase->Charge[type];

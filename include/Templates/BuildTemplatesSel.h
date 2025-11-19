@@ -18,6 +18,15 @@
 
 namespace BuildTemplatesSel {
 
+class ChargeSigma {
+public:
+    // imposta una sigma per un dato Z
+    static void SetSigma(unsigned int Z, float sigma);
+
+    // recupera la sigma di un dato Z
+    static float GetSigma(unsigned int Z);
+};
+
 class HitPattern : public NSL::Selection {
 public:
   HitPattern();
@@ -25,13 +34,12 @@ public:
 
 class L3toL8ChargeSelection : public NSL::Selection {
 public:
-  L3toL8ChargeSelection(unsigned int charge,
-                                     NAIA::TrTrack::ChargeRecoType recoType);
+  L3toL8ChargeSelection(unsigned int charge, NAIA::TrTrack::ChargeRecoType recoType, float n_sigma = 1.2f);
 };
 
 class InnerTrackerChargeInRange : public NSL::Selection {
 public:
-  InnerTrackerChargeInRange(unsigned int charge, NAIA::TrTrack::ChargeRecoType recoType);
+  InnerTrackerChargeInRange(unsigned int charge, NAIA::TrTrack::ChargeRecoType recoType, float n_sigma = 1.2f);
 };
 
 class InnerTrackerChargeRMSLessThan : public NSL::Selection {
@@ -46,12 +54,12 @@ public:
 
 class TrackerLayerChargeInRange : public NSL::Selection {
 public:
-  TrackerLayerChargeInRange(unsigned int layer, unsigned int charge, NAIA::TrTrack::ChargeRecoType recoType);
+  TrackerLayerChargeInRange(unsigned int layer, unsigned int charge, NAIA::TrTrack::ChargeRecoType recoType, float n_sigma = 1.2f);
 };
 
 class TofChargeInRange : public NSL::Selection {
 public:
-  TofChargeInRange(unsigned int charge, NAIA::Tof::ChargeType type);
+  TofChargeInRange(unsigned int charge, NAIA::Tof::ChargeType type, float n_sigma = 1.2f);
 };
 
 class HasGoodSecondTrTrack : public NSL::Selection {
