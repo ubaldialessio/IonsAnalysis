@@ -61,8 +61,12 @@ struct ChargeContext {
 
     std::function<bool( NAIA::Event&)> den_trig;
 
-    std::function<bool( NAIA::Event&)> l1_temp;
-    std::function<bool( NAIA::Event&)> l2_temp;
+    std::function<bool( NAIA::Event&)> l1_temp_nominal;
+    std::function<bool( NAIA::Event&)> l1_temp_loose;
+    std::function<bool( NAIA::Event&)> l1_temp_tight;
+    std::function<bool( NAIA::Event&)> l2_temp_nominal;
+    std::function<bool( NAIA::Event&)> l2_temp_loose;
+    std::function<bool( NAIA::Event&)> l2_temp_tight;
 };
 // -------- TemplateSet helper --------
 struct TemplateSet {
@@ -115,9 +119,9 @@ public:
                           bool isMC, TString exename);
 
     // Template filling helpers
-    void FillTemplateL1(unsigned int charge, const std::string &geom, int ibin, float q, double w);
-    void FillTemplateL2(unsigned int charge, const std::string &geom, int ibin, float q, double w);
-    void FillTemplateL1Distribution(unsigned int charge, const std::string &geom, int ibin, float q, double w);
+    void FillTemplateL1(unsigned int charge, const std::string &geom, const std::string cutType, int ibin, float q, double w);
+    void FillTemplateL2(unsigned int charge, const std::string &geom, const std::string cutType, int ibin, float q, double w);
+    void FillTemplateL1Distribution(unsigned int charge, const std::string &geom, const std::string cutType, int ibin, float q, double w);
 
     // Write template distributions/trees to file
     void WriteTemplateDistributions(const std::map<unsigned int, std::string>& ionPaths,
@@ -193,8 +197,10 @@ private:
              std::map<std::string, 
                       std::map<std::string, TH1D*>>> distributionHistos;   
 
-    // Map of template histograms (charge->geom->TemplateSet)
-    std::map<unsigned int, std::map<std::string, TemplateSet>> templateSets;
+    // Map of template histograms (charge->geom->cutType->TemplateSet)
+    std::map<unsigned int, 
+            std::map<std::string, 
+                std::map<std::string, TemplateSet>>> templateSets;
 
     // Map of Mc Trees            
     std::map<unsigned int, 

@@ -253,9 +253,13 @@ ChargeAnalysisManager::ChargeAnalysisManager(const std::vector<unsigned int>& ch
 
         ctx.den_trig = [sel = Den_trig(c)]( NAIA::Event& e) mutable { return sel(e); };
 
-        ctx.l1_temp = [sel = L1_temp(c)]( NAIA::Event& e) mutable { return sel(e); };
-        ctx.l2_temp = [sel = L2_temp(c)]( NAIA::Event& e) mutable { return sel(e); };
+        ctx.l1_temp_nominal = [sel = L1_temp_nominal(c)]( NAIA::Event& e) mutable { return sel(e); };
+        ctx.l1_temp_tight = [sel = L1_temp_tight(c)]( NAIA::Event& e) mutable { return sel(e); };
+        ctx.l1_temp_loose = [sel = L1_temp_loose(c)]( NAIA::Event& e) mutable { return sel(e); };
 
+        ctx.l2_temp_nominal = [sel = L2_temp_nominal(c)]( NAIA::Event& e) mutable { return sel(e); };
+        ctx.l2_temp_tight = [sel = L2_temp_tight(c)]( NAIA::Event& e) mutable { return sel(e); };
+        ctx.l2_temp_loose = [sel = L2_temp_loose(c)]( NAIA::Event& e) mutable { return sel(e); };
 
         contexts[c] = std::move(ctx);
     }
@@ -288,7 +292,7 @@ void ChargeAnalysisManager::BookHistograms(unsigned int charge) {
         "unbiased_trig",
         "phys_trig",
         "sample_trig",
-        "phys_trig_acc4"
+        "phys_trig_acc4",
         "phys_trig_acc7"
     };
 
@@ -321,97 +325,119 @@ void ChargeAnalysisManager::BookDistributionHistograms(unsigned int charge) {
     }
 }
 void ChargeAnalysisManager::BookTemplateHistograms(unsigned int charge) {
-    std::vector<std::string> geoms = {"IL1", "FS"};
+    std::vector<std::string> geoms = {"IL1","FS"};
+    std::vector<std::string> cutTypes = {"nominal","loose","tight","distribution"};
 
-    // number of rigidity bins: use fRbins size-1
-    int nRtemplateBins = static_cast<int>(fRbins.size()) - 1;
-    if (nRtemplateBins <= 0) return;
+    int nBins = static_cast<int>(fRbins.size()) - 1;
+    if (nBins <= 0) return;
 
-    for (auto& geom : geoms) {
-        // ensure an entry exists
-        TemplateSet &set = templateSets[charge][geom];
-        // clear any preexisting
-        set.Clear();
+    for (auto &geom : geoms) {
+        for (auto &cType : cutTypes) {
 
-        // L1 templates: create one histogram + kernel tree per rigidity template bin
-        set.L1Templates.reserve(nRtemplateBins);
-        set.L1KernelTrees.reserve(nRtemplateBins);
-        set.L1charge.reserve(nRtemplateBins);
-        set.L1weight.reserve(nRtemplateBins);
+            TemplateSet &set = templateSets[charge][geom][cType];
+            set.Clear();
 
-        for (int ibin = 0; ibin < nRtemplateBins; ++ibin) {
-            double rmin = fRbins[ibin];
-            double rmax = fRbins[ibin+1];
-            TString hname = Form("L1Template_%03d", ibin);
-            TString htitle = Form("%5.3f < R (GV) < %5.3f;Q_{L1X};Counts", rmin, rmax);
-            TH1D* h = new TH1D(hname.Data(), htitle.Data(), 600, 0.0, 32.0);
-            set.L1Templates.push_back(h);
+            bool isDist = (cType == "distribution");
 
-            // kernel tree
-            TTree* kt = new TTree(Form("%s_L1KTree_%03d", geom.c_str(), ibin),
-                                  Form("%5.3f < R (GV) < %5.3f", rmin, rmax));
-            kt->SetDirectory(0);
-            // push default values to vectors so addresses are stable
-            set.L1charge.push_back(0.0f);
-            set.L1weight.push_back(0.0);
-            int idx = static_cast<int>(set.L1KernelTrees.size());
-            // create branches using pointers to the storage we just pushed
-            kt->Branch("L1charge", &(set.L1charge[idx]), "L1charge/F");
-            kt->Branch("L1weight", &(set.L1weight[idx]), "L1weight/D");
-            set.L1KernelTrees.push_back(kt);
-        }
+            // ================================
+            //   CASE 1 — DISTRIBUTION ONLY
+            // ================================
+            if (isDist) {
 
-        // L2 templates: same as L1 but different naming
-        set.L2Templates.reserve(nRtemplateBins);
-        set.L2KernelTrees.reserve(nRtemplateBins);
-        set.L2charge.reserve(nRtemplateBins);
-        set.L2weight.reserve(nRtemplateBins);
+                set.L1Distributions.reserve(nBins);
+                set.L1DistKernelTrees.reserve(nBins);
+                set.L1Dcharge.resize(nBins, 0.f);
+                set.L1Dweight.resize(nBins, 0.0);
 
-        for (int ibin = 0; ibin < nRtemplateBins; ++ibin) {
-            double rmin = fRbins[ibin];
-            double rmax = fRbins[ibin+1];
-            TString hname = Form("L2Template_%03d", ibin);
-            TString htitle = Form("%5.3f < R (GV) < %5.3f;Q_{L2X};Counts", rmin, rmax);
-            TH1D* h = new TH1D(hname.Data(), htitle.Data(), 600, 0.0, 32.0);
-            set.L2Templates.push_back(h);
+                for (int ibin = 0; ibin < nBins; ++ibin) {
 
-            TTree* kt = new TTree(Form("%s_L2KTree_%03d", geom.c_str(), ibin),
-                                  Form("%5.3f < R (GV) < %5.3f", rmin, rmax));
-            kt->SetDirectory(0);
-            set.L2charge.push_back(0.0f);
-            set.L2weight.push_back(0.0);
-            int idx = static_cast<int>(set.L2KernelTrees.size());
-            kt->Branch("L2charge", &(set.L2charge[idx]), "L2charge/F");
-            kt->Branch("L2weight", &(set.L2weight[idx]), "L2weight/D");
-            set.L2KernelTrees.push_back(kt);
-        }
+                    double rmin = fRbins[ibin];
+                    double rmax = fRbins[ibin+1];
 
-        // L1 charge distribution histos + trees (same binning)
-        set.L1Distributions.reserve(nRtemplateBins);
-        set.L1DistKernelTrees.reserve(nRtemplateBins);
-        set.L1Dcharge.reserve(nRtemplateBins);
-        set.L1Dweight.reserve(nRtemplateBins);
+                    // histogram --------------------------------------------------
+                    TString hname = Form("L1Distribution_%03d", ibin);
+                    TString htitle = Form("%5.3f < R < %5.3f; Q_{L1}; Counts", rmin, rmax);
 
-        for (int ibin = 0; ibin < nRtemplateBins; ++ibin) {
-            double rmin = fRbins[ibin];
-            double rmax = fRbins[ibin+1];
-            TString hname = Form("L1Distribution_%03d", ibin);
-            TString htitle = Form("%5.3f < R (GV) < %5.3f;Q_{L1};Counts", rmin, rmax);
-            TH1D* h = new TH1D(hname.Data(), htitle.Data(), 600, 0.0, 32.0);
-            set.L1Distributions.push_back(h);
+                    TH1D *h = new TH1D(hname, htitle, 600, 0, 32);
+                    set.L1Distributions.push_back(h);
 
-            TTree* kt = new TTree(Form("%s_L1DKTree_%03d", geom.c_str(), ibin),
-                                  Form("%5.3f < R (GV) < %5.3f", rmin, rmax));
-            kt->SetDirectory(0);
-            set.L1Dcharge.push_back(0.0f);
-            set.L1Dweight.push_back(0.0);
-            int idx = static_cast<int>(set.L1DistKernelTrees.size());
-            kt->Branch("L1Dcharge", &(set.L1Dcharge[idx]), "L1Dcharge/F");
-            kt->Branch("L1Dweight", &(set.L1Dweight[idx]), "L1Dweight/D");
-            set.L1DistKernelTrees.push_back(kt);
-        }
-    } // geom loop
+                    // kernel tree -----------------------------------------------
+                    TTree *kt = new TTree(Form("%s_L1DKTree_%03d", geom.c_str(), ibin),
+                                          Form("%5.3f < R < %5.3f", rmin, rmax));
+                    kt->SetDirectory(0);
+
+                    kt->Branch("L1Dcharge", &(set.L1Dcharge[ibin]), "L1Dcharge/F");
+                    kt->Branch("L1Dweight", &(set.L1Dweight[ibin]), "L1Dweight/D");
+
+                    set.L1DistKernelTrees.push_back(kt);
+                }
+
+                continue; // IMPORTANTISSIMO: non bookare templates
+            }
+
+            // ================================
+            //   CASE 2 — TEMPLATES (nom/loose/tight)
+            // ================================
+
+            // L1 templates
+            set.L1Templates.reserve(nBins);
+            set.L1KernelTrees.reserve(nBins);
+            set.L1charge.resize(nBins, 0.f);
+            set.L1weight.resize(nBins, 0.0);
+
+            for (int ibin = 0; ibin < nBins; ++ibin) {
+
+                double rmin = fRbins[ibin];
+                double rmax = fRbins[ibin+1];
+
+                TString hname = Form("L1Template_%03d", ibin);
+                TString htitle = Form("%5.3f < R < %5.3f; Q_{L1X}; Counts", rmin, rmax);
+
+                TH1D *h = new TH1D(hname, htitle, 600, 0, 32);
+                set.L1Templates.push_back(h);
+
+                TTree *kt = new TTree(Form("%s_L1KTree_%03d", geom.c_str(), ibin),
+                                      Form("%5.3f < R < %5.3f", rmin, rmax));
+                kt->SetDirectory(0);
+
+                kt->Branch("L1charge", &(set.L1charge[ibin]), "L1charge/F");
+                kt->Branch("L1weight", &(set.L1weight[ibin]), "L1weight/D");
+
+                set.L1KernelTrees.push_back(kt);
+            }
+
+
+            // L2 templates — stessa logica
+            set.L2Templates.reserve(nBins);
+            set.L2KernelTrees.reserve(nBins);
+            set.L2charge.resize(nBins, 0.f);
+            set.L2weight.resize(nBins, 0.0);
+
+            for (int ibin = 0; ibin < nBins; ++ibin) {
+
+                double rmin = fRbins[ibin];
+                double rmax = fRbins[ibin+1];
+
+                TString hname = Form("L2Template_%03d", ibin);
+                TString htitle = Form("%5.3f < R < %5.3f; Q_{L2X}; Counts", rmin, rmax);
+
+                TH1D *h = new TH1D(hname, htitle, 600, 0, 32);
+                set.L2Templates.push_back(h);
+
+                TTree *kt = new TTree(Form("%s_L2KTree_%03d", geom.c_str(), ibin),
+                                      Form("%5.3f < R < %5.3f", rmin, rmax));
+                kt->SetDirectory(0);
+
+                kt->Branch("L2charge", &(set.L2charge[ibin]), "L2charge/F");
+                kt->Branch("L2weight", &(set.L2weight[ibin]), "L2weight/D");
+
+                set.L2KernelTrees.push_back(kt);
+            }
+
+        } // cutType
+    } // geom
 }
+
 void ChargeAnalysisManager::BookMcTrees(unsigned int charge) {
     std::vector<std::string> geoms = {"IL1", "FS"};
 
@@ -812,16 +838,24 @@ void ChargeAnalysisManager::WriteMcTrees(const std::map<unsigned int, std::strin
     }
 }
 // Helper: safe access to TemplateSet, returns nullptr if missing
-static TemplateSet* _getTemplateSetSafe(std::map<unsigned int, std::map<std::string, TemplateSet>> &mapTS,
-                                        unsigned int charge, const std::string &geom) {
+static TemplateSet* _getTemplateSetSafe(
+    std::map<unsigned int, 
+             std::map<std::string, 
+                      std::map<std::string, TemplateSet>>> &mapTS,
+                                unsigned int charge, const std::string &geom, const std::string &cutType) {
     auto it_charge = mapTS.find(charge);
     if (it_charge == mapTS.end()) return nullptr;
+
     auto it_geom = it_charge->second.find(geom);
     if (it_geom == it_charge->second.end()) return nullptr;
-    return &(it_geom->second);
+
+    auto it_cut = it_geom->second.find(cutType);
+    if (it_cut == it_geom->second.end()) return nullptr;
+
+    return &(it_cut->second);
 }
-void ChargeAnalysisManager::FillTemplateL1(unsigned int charge, const std::string &geom, int ibin, float q, double w) {
-    TemplateSet* ts = _getTemplateSetSafe(templateSets, charge, geom);
+void ChargeAnalysisManager::FillTemplateL1(unsigned int charge, const std::string &geom, const std::string cutType, int ibin, float q, double w) {
+    TemplateSet* ts = _getTemplateSetSafe(templateSets, charge, geom, cutType);
     if (!ts) return;
     if (ibin < 0 || ibin >= static_cast<int>(ts->L1Templates.size())) return;
 
@@ -835,8 +869,8 @@ void ChargeAnalysisManager::FillTemplateL1(unsigned int charge, const std::strin
     TTree* kt = ts->L1KernelTrees[ibin];
     if (kt) kt->Fill();
 }
-void ChargeAnalysisManager::FillTemplateL2(unsigned int charge, const std::string &geom, int ibin, float q, double w) {
-    TemplateSet* ts = _getTemplateSetSafe(templateSets, charge, geom);
+void ChargeAnalysisManager::FillTemplateL2(unsigned int charge, const std::string &geom, const std::string cutType, int ibin, float q, double w) {
+    TemplateSet* ts = _getTemplateSetSafe(templateSets, charge, geom, cutType);
     if (!ts) return;
     if (ibin < 0 || ibin >= static_cast<int>(ts->L2Templates.size())) return;
 
@@ -848,8 +882,8 @@ void ChargeAnalysisManager::FillTemplateL2(unsigned int charge, const std::strin
     TTree* kt = ts->L2KernelTrees[ibin];
     if (kt) kt->Fill();
 }
-void ChargeAnalysisManager::FillTemplateL1Distribution(unsigned int charge, const std::string &geom, int ibin, float q, double w) {
-    TemplateSet* ts = _getTemplateSetSafe(templateSets, charge, geom);
+void ChargeAnalysisManager::FillTemplateL1Distribution(unsigned int charge, const std::string &geom, const std::string cutType, int ibin, float q, double w) {
+    TemplateSet* ts = _getTemplateSetSafe(templateSets, charge, geom, "distribution");
     if (!ts) return;
     if (ibin < 0 || ibin >= static_cast<int>(ts->L1Distributions.size())) return;
 
@@ -861,53 +895,74 @@ void ChargeAnalysisManager::FillTemplateL1Distribution(unsigned int charge, cons
     TTree* kt = ts->L1DistKernelTrees[ibin];
     if (kt) kt->Fill();
 }
-void ChargeAnalysisManager::WriteTemplateDistributions(const std::map<unsigned int, std::string>& ionPaths,
-                                                      const std::string& outname,
-                                                      bool isMC) {
-        for (auto charge : fCharges) {
+void ChargeAnalysisManager::WriteTemplateDistributions(
+        const std::map<unsigned int, std::string>& ionPaths,
+        const std::string& outname,
+        bool isMC) {
+    for (auto charge : fCharges) {
+
         auto it = templateSets.find(charge);
         if (it == templateSets.end()) continue;
 
         const auto &ionPath = ionPaths.at(charge);
-        std::string filename =
-            "/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/Fragmentation/BelowL1/"
-            + ionPath + "/" + outname;
 
-        TFile fout(filename.c_str(), "RECREATE", "", ROOT::CompressionSettings(ROOT::kLZ4, 9));
+        std::string filename =
+            "/storage/gpfs_ams/ams/users/aubaldi/IonsAnalysis/Fragmentation/BelowL1/" +
+            ionPath + "/" + outname;
+
+        TFile fout(filename.c_str(), "RECREATE",
+                   "", ROOT::CompressionSettings(ROOT::kLZ4, 9));
+
         if (fout.IsZombie()) {
             std::cerr << "Cannot create file " << filename << std::endl;
             continue;
         }
 
-        const auto &geomMap = it->second;
-        for (const auto &[geom, ts] : geomMap) {
+
+        // --- livello: geom ---
+        for (auto &[geom, cutMap] : it->second) {
+
             TDirectory *geomDir = fout.GetDirectory(geom.c_str());
             if (!geomDir) geomDir = fout.mkdir(geom.c_str());
-            geomDir->cd();
 
-            auto writeGroup = [&](const std::vector<TH1D*>& hists,
-                                  const std::vector<TTree*>& trees,
-                                  const char *dirName) {
-                TDirectory *dir = geomDir->GetDirectory(dirName);
-                if (!dir) dir = geomDir->mkdir(dirName);
-                dir->cd();
-                const size_t n = hists.size();
-                for (size_t i = 0; i < n; ++i) {
-                    if (hists[i]) hists[i]->Write("", TObject::kOverwrite);
-                    if (trees[i]) trees[i]->Write("", TObject::kOverwrite);
-                }
+
+            // --- livello: cutType ---
+            for (auto &[cutType, ts] : cutMap) {
+
                 geomDir->cd();
-            };
 
-            writeGroup(ts.L1Templates, ts.L1KernelTrees, Form("L1TemplateList_%i", charge));
-            writeGroup(ts.L2Templates, ts.L2KernelTrees, Form("L2TemplateList_%i", charge));
-            writeGroup(ts.L1Distributions, ts.L1DistKernelTrees, Form("L1Distribution_%i", charge));
+                TDirectory *cutDir = geomDir->GetDirectory(cutType.c_str());
+                if (!cutDir) cutDir = geomDir->mkdir(cutType.c_str());
+
+                cutDir->cd();
+
+                auto writeGroup = [&](const std::vector<TH1D*>& hists,
+                                      const std::vector<TTree*>& trees) {
+                    for (size_t i = 0; i < hists.size(); ++i) {
+                        if (hists[i] && hists[i]->GetEntries()>0)  hists[i]->Write("", TObject::kOverwrite);
+                        //if (trees[i]) trees[i]->Write("", TObject::kOverwrite);
+                    }
+                };
+
+
+                if (cutType=="distribution") {
+                    cutDir->cd();
+                    writeGroup(ts.L1Distributions, ts.L1DistKernelTrees);
+                }
+                else { 
+                    cutDir->cd();
+                    writeGroup(ts.L1Templates, ts.L1KernelTrees); 
+                    cutDir->cd();
+                    writeGroup(ts.L2Templates, ts.L2KernelTrees); 
+                }
+            }
         }
 
         fout.Write("", TObject::kOverwrite);
         fout.Close();
     }
 }
+
 TH2D* ChargeAnalysisManager::GetHist(unsigned int charge,
                                      const std::string& geom,
                                      const std::string& name) {
